@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
+import InputField from'./components/Inputfield'
+import { Todo } from './model';
+import  ToDoList  from './components/ToDoList'
 
 // let name:string;
 // let age:number | string; // union : both types ok
@@ -78,9 +81,26 @@ import './App.css';
 
 
 const App: React.FC = () => { // functional compoenent, could use React.ReactNode -==> support all of the types
-  return (
+  
+	const [todo, setTodo] = useState<string>("");
+	const [todos, setTodos] = useState<Todo[]>([]);
+
+	const handleAdd= (e: React.FormEvent) => {
+		e.preventDefault();
+		if(todo)
+		{
+			setTodos([...todos, {id:Date.now(), todo, isDone: false}])
+			setTodo("");
+		}
+	};
+
+	console.log(todos);
+
+	return (
     <div className="App">
-		<span className = 'heading' >My amazing app</span>
+		<span className = 'heading' >this is a test app</span>
+		<InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd}/>
+		<ToDoList  todos={todos} setTodos={setTodos}/>
     </div>
   );
 }
