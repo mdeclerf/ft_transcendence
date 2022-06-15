@@ -4,6 +4,8 @@ import InputField from'./components/Inputfield'
 import { Todo } from './model';
 import  ToDoList  from './components/ToDoList'
 
+// https://www.youtube.com/watch?v=FJDVKeh7RJI&t=191s
+
 // let name:string;
 // let age:number | string; // union : both types ok
 // let isStud: boolean;
