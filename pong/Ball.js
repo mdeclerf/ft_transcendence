@@ -6,11 +6,9 @@
 // 	}
 // }
 const INITIAL_VELOCITY = .025
-const VELOCITY_INCREASE = .000001
+const VELOCITY_INCREASE = .00001
 
 export default class Ball {
-
-	ballElem;
 	constructor(ballElem) {
 		this.ballElem = ballElem;
 		this.reset();
@@ -49,7 +47,7 @@ export default class Ball {
 		this.velocity = INITIAL_VELOCITY;
 	}
 
-	update(delta) {
+	update(delta, paddleRects) {
 		this.x += this.direction.x * this.velocity * delta;
 		this.y += this.direction.y * this.velocity * delta;
 		this.velocity += VELOCITY_INCREASE * delta;
@@ -59,11 +57,17 @@ export default class Ball {
 			this.direction.y *= -1;
 		}
 
-		if(rect.right >= window.innerWidth || rect.left <= 0) // bounce left and right side screen
-		{
+		if(paddleRects.some(r => isCollision(r, rect))) {
 			this.direction.x *= -1;
-		}
+		} // function loops through different paddles, if any return true, true for entire thing
 	}
+}
+
+function isCollision(rect1, rect2) {
+	return (rect1.left <= rect2.right && 
+	rect1.right >= rect2.left && 
+	rect1.top <= rect2.bottom &&
+	rect1.bottom >= rect2.top)
 }
 
 function randomNumberBetween(min, max) {
