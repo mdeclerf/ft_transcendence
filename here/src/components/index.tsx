@@ -1,3 +1,4 @@
+import { hasSelectionSupport } from '@testing-library/user-event/dist/utils';
 import { lookup } from 'dns';
 import React, {useRef, useEffect, MouseEvent} from 'react';
 
@@ -30,13 +31,15 @@ interface Ball {
 	dx:number,
 	reset:boolean
 }
+function sleep(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-const collision = (ball: Ball, paddle: Paddle) =>
-{
-	return ball.x < paddle.x + paddle.width &&
-	ball.x + ball.width > paddle.x &&
-	ball.x < paddle.x + paddle.height &&
-	ball.x + ball.height > paddle.x
+export const collision = (ball: Ball, paddle: Paddle) => {
+    return ball.x < paddle.x + paddle.width &&
+        ball.x + ball.width > paddle.x &&
+        ball.y < paddle.y + paddle.height &&
+        ball.y + ball.height > paddle.y;
 }
 
 const Canvas = () => {
@@ -58,15 +61,17 @@ const Canvas = () => {
 		score = { player:0, computer:0, winning_score: 4, haswon: false };
 
 		window.addEventListener('keydown', (e) => {
-			if(e.key == 'Arrow Up')
-				leftPaddle.dy = -paddleSpeed;
-			else if (e.key == 'Arrow Down')
-				leftPaddle.dy = paddleSpeed;
-		});
-
-		window.addEventListener('keyup', (e) => {
-			if(e.key == 'Arrow Up' || e.key == 'Arrow Down')
-				leftPaddle.dy = 0;
+			if (e.which === 38) {
+			  leftPaddle.dy = -paddleSpeed;
+			}
+			else if (e.which === 40) {
+			  leftPaddle.dy = paddleSpeed;
+			}
+		  });
+		  window.addEventListener('keyup', (e) => {
+			if (e.which === 38 || e.which === 40) {
+			  leftPaddle.dy = 0;
+			}
 		});
 		loop();
 	}, []);
@@ -93,6 +98,8 @@ const Canvas = () => {
 		ball.x += ball.dx;
 		ball.y += ball.dy;
 
+		rightPaddle.dy = ball.dy;
+
 		if(ball.y < 0) // to make the ball bounnnnce 
 		{
 			ball.y = 0 + ball.height;
@@ -104,13 +111,28 @@ const Canvas = () => {
 			ball.dy *= -1;
 		}
 
-		if((ball.x < 0 || ball.x > canvas.width) && ball.reset == false) {
+		if((ball.x < 0 || ball.x > canvas.width) && !ball.reset) {
 			ball.reset = true;
+			if (ball.x < 0)
+				score.player += 1;
+			else if (ball.x > canvas.width)
+				score.computer += 1;
+
+			if (score.player >= score.winning_score)
+			{
+				score.computer = 0;
+				score.player = 0;
+			}
+			else if (score.computer >= score.winning_score)
+			{
+				score.computer = 0;
+				score.player = 0;
+			}
 			setTimeout(() => {
 				ball.reset = false;
 				ball.x = canvas.width / 2;
 				ball.y = canvas.height / 2;
-			}, 100);
+				}, 100);
 		};
 
 		if(collision(ball, leftPaddle)) {
@@ -119,13 +141,27 @@ const Canvas = () => {
 		}
 		else if (collision(ball, rightPaddle)) {
 			ball.dx *= -1;
-			ball.x = rightPaddle.x - rightPaddle.width;
+			ball.x = rightPaddle.x - ball.width;
 		}
 
 		ctx.fillStyle = 'yellow';
 		ctx.beginPath();
 		ctx.arc(ball.x, ball.y, 10, 0, Math.PI*2, true );
 		ctx.fill();
+
+		let net = 8;
+		for (let i = net; i < canvas.height; i += net * 2) {
+			ctx.fillStyle = 'yellow';
+			ctx.fillRect(canvas.width / 2 - (net / 2), i, net, net);
+		};
+
+		if (score.player < score.winning_score && score.computer < score.winning_score)
+		{
+			ctx.fillStyle = 'blue';
+			ctx.font = '50px Arial';
+			ctx.fillText(score.player, canvas.width / 2 + 150, 60);
+			ctx.fillText(score.computer, canvas.width / 2 - 150, 60);
+		}
 	}
 
 	return <canvas ref = {canvasRef} width = "1000" height = "600" />
