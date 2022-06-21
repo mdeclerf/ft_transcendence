@@ -33,6 +33,8 @@ const App: React.FC<{}> = () => {
 	let canvasRef = useRef<HTMLCanvasElement | null>(null);
 	let canvasCtxRef = React.useRef<CanvasRenderingContext2D | null>(null);
 
+	useEffect(() => { 
+
 	let dim: dimcanvas = { width: 800, height: 600};
 	let paddle1: paddle = { X: 10, Y: dim.height / 2 - 50, Width: 15, Height: 100};
 	let paddle2: paddle = { X: dim.width - 25, Y: dim.height / 2 - 50 , Width: 15, Height: 100};
@@ -41,14 +43,10 @@ const App: React.FC<{}> = () => {
 
 	if (canvasRef.current) {
 		canvasCtxRef.current = canvasRef.current.getContext('2d');
-		let ctx = canvasCtxRef.current;
 	}
+	let ctx = canvasCtxRef.current;
 
-	if (canvasRef.current) {
-	canvasCtxRef.current = canvasRef.current.getContext('2d');
-	let ctx = canvasCtxRef.current };
-
-	const makeRectangleShape = (ctx: CanvasRenderingContext2D | null, cX: number, cY:number, width:number, height:number, color:string ) =>
+	const makeRectangleShape = (cX: number, cY:number, width:number, height:number, color:string ) =>
 	{
 		if(ctx)
 		{
@@ -57,7 +55,7 @@ const App: React.FC<{}> = () => {
 		}
 	}
 
-	const makeCircleShape = (ctx: CanvasRenderingContext2D | null, cX: number, cY:number, radious:number , angle: number, color:string ) =>
+	const makeCircleShape = (cX: number, cY:number, radious:number , angle: number, color:string ) =>
 	{
 		if(ctx)
 		{
@@ -68,7 +66,7 @@ const App: React.FC<{}> = () => {
 		}
 	}
 
-	const makescores = (ctx: CanvasRenderingContext2D | null, score :score, dim:dimcanvas ) => {
+	const makescores = () => {
 		if(ctx)
 		{
 			ctx.font = '25px serif';
@@ -78,13 +76,13 @@ const App: React.FC<{}> = () => {
 		}
 	}
 
-	const computerAi = (paddle2: paddle, ball: ball) => {
+	const computerAi = () => {
 		let paddle2YCenter: number = paddle2.Y + (paddle2.Height / 2) ;
 		if(paddle2YCenter < ball.Y - 40) { paddle2.Y += 13 }
 		 else if(paddle2YCenter < ball.Y + 40) { paddle2.Y -= 13 }
 	}
 
-	const move = (ctx: CanvasRenderingContext2D | null, score :score, paddle1:paddle, paddle2:paddle, ball:ball, dim:dimcanvas) => {
+	const move = () => {
 		if(score.haswon)
 		{
 			if(score.player1 >= score.winningscore && ctx)
@@ -102,7 +100,7 @@ const App: React.FC<{}> = () => {
 			return;
 		}
 
-		computerAi(paddle2, ball);
+		computerAi();
 
 		ball.X += ball.SpeedX;
 		ball.Y += ball.SpeedY;
@@ -117,7 +115,7 @@ const App: React.FC<{}> = () => {
 			else
 			{
 				score.player1 += 1;
-				ballReset(score, paddle1, paddle2, ball, dim);
+				ballReset();
 			}
 		}
 
@@ -125,7 +123,7 @@ const App: React.FC<{}> = () => {
 		if(ball.Y < 10) { ball.SpeedY = -ball.SpeedY }
 	}
 
-	const ballReset = (score :score, paddle1:paddle, paddle2:paddle, ball:ball, dim:dimcanvas) => {
+	const ballReset = () => {
 		if (score.player1 >= score.winningscore || score.player2 >= score.winningscore ) { score.haswon = true; }
 
 		ball.SpeedX =- ball.SpeedX;
@@ -133,7 +131,14 @@ const App: React.FC<{}> = () => {
 		ball.Y = dim.height / 2;
 	}
 
-	const calculateMousePosition = (canvasRef : HTMLCanvasElement | null, ctx: CanvasRenderingContext2D, e: React.MouseEvent<HTMLButtonElement>) => {
+	const draw = () => {
+		makeRectangleShape( paddle1.X,  paddle1.Y, paddle1.Width, paddle1.Height, 'blue' );
+		makeRectangleShape( paddle2.X,  paddle1.Y, paddle2.Width, paddle2.Height, 'blue' );
+		makeCircleShape( ball.X, ball.Y, 10, 0, 'yellow');
+		makescores();
+	}
+
+	const calculateMousePosition = (e: MouseEvent) => {
 		if(canvasRef)
 		{
 			let rect = canvasRef.getBoundingClientRect();
@@ -144,35 +149,37 @@ const App: React.FC<{}> = () => {
 		}
 	}
 
-	const handleMouseClick = (event: React.MouseEvent<HTMLButtonElement>, score:score) => {
+	const CalculateMousePosition = (mouseEvent: MouseEvent) => {
+		if(canvasRef)
+		{
+			let rect = canvasRef.getBoundingClientRect();
+			let root = document.documentElement;
+			let mouseX = mouseEvent.clientX - rect.left - root.scrollLeft;
+			let mouseY = mouseEvent.clientY - rect.top - root.scrollTop;
+			return { x: mouseX, y: mouseY }
+		}
+      }
+
+      const handleMouseClick = (evt: MouseEvent) => {
         if(score.haswon){
-          score.player1 = 0;
-          score.player2 = 0;
-          score.haswon = false;
+        score.player1 = 0;
+        score.player2 = 0;
+        score.haswon = false;
         }
       }
 
-    const onMouseDown = (event: React.MouseEvent<HTMLButtonElement>, score:score) => {
-		 handleMouseClick(event, score);
-	}; // calls the function that restart the game when "MOUSE-CLICK"
+      window.addEventListener("mousedown", handleMouseClick);  // calls the function that restart the game when "MOUSE-CLICK"
 
-    const onMouseMove =(event: React.MouseEvent<HTMLButtonElement>, canvasRef : HTMLCanvasElement | null, ctx: CanvasRenderingContext2D , paddle1: paddle) => {  // Controlling the User Paddle by calculating the position of the mouse.
-    	let mousePos: any = calculateMousePosition(canvasRef, ctx, event);
-    	paddle1.Y = mousePos.y - (paddle1.Height / 2);
-	}
+      window.addEventListener('mousemove', (evt: MouseEvent) => {  // Controlling the User Paddle by calculating the position of the mouse.
+        let mousePos = CalculateMousePosition(evt);
+        paddle1.Y = mousePos.y - (paddle1.Height / 2);
+      })
 
-	const draw = (ctx: CanvasRenderingContext2D, paddle1:paddle, paddle2:paddle, ball:ball, score:score) => {
-		makeRectangleShape(ctx,  paddle1.X,  paddle1.Y, paddle1.Width, paddle1.Height, 'blue' );
-		makeRectangleShape(ctx,  paddle2.X,  paddle1.Y, paddle2.Width, paddle2.Height, 'blue' );
-		makeCircleShape(ctx, ball.X, ball.Y, 10, 0, 'yellow');
-		makescores(ctx, score, dim);
-	}
+	setInterval(() => {
+				draw();
+				move();
+			}, 1000 / 40);
 
-	useEffect(() => {
-		setInterval((ctx: CanvasRenderingContext2D, paddle1:paddle, paddle2:paddle, ball:ball, score:score,  dim:dimcanvas) => {
-			draw(ctx, paddle1, paddle2, ball, score);
-			move(ctx, score, paddle1, paddle2, ball, dim);
-		}, 1000 / 40);
 	}, []);
 
 	return (<canvas
@@ -180,8 +187,8 @@ const App: React.FC<{}> = () => {
 	style={{border : "1px solid #000"}}
 	width={800}
 	height={600}
-	ref={canvasRef}>
-	</canvas>);
+	ref={canvasRef}
+	></canvas>);
 };
 
 export default App;
