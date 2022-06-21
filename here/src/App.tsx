@@ -1,4 +1,5 @@
-import React, {useRef, useEffect} from 'react';
+import { render } from '@testing-library/react';
+import React, {useRef, useEffect, MouseEvent} from 'react';
 import './App.css';
 
 interface ball {
@@ -28,6 +29,7 @@ interface dimcanvas {
 }
 
 const App: React.FC<{}> = () => {
+
 	let canvasRef = useRef<HTMLCanvasElement | null>(null);
 	let canvasCtxRef = React.useRef<CanvasRenderingContext2D | null>(null);
 
@@ -36,6 +38,15 @@ const App: React.FC<{}> = () => {
 	let paddle2: paddle = { X: dim.width - 25, Y: dim.height / 2 - 50 , Width: 15, Height: 100};
 	let score: score = { player1: 0, player2: 0, winningscore: 3, haswon: false};
 	let ball: ball = { X: dim.width / 2, Y: dim.height/2, SpeedX: 10, SpeedY: 4};
+
+	if (canvasRef.current) {
+		canvasCtxRef.current = canvasRef.current.getContext('2d');
+		let ctx = canvasCtxRef.current;
+	}
+
+	if (canvasRef.current) {
+	canvasCtxRef.current = canvasRef.current.getContext('2d');
+	let ctx = canvasCtxRef.current };
 
 	const makeRectangleShape = (ctx: CanvasRenderingContext2D | null, cX: number, cY:number, width:number, height:number, color:string ) =>
 	{
@@ -133,7 +144,7 @@ const App: React.FC<{}> = () => {
 		}
 	}
 
-	const handleMouseClick = (evt:any, score:score) => {
+	const handleMouseClick = (event: React.MouseEvent<HTMLButtonElement>, score:score) => {
         if(score.haswon){
           score.player1 = 0;
           score.player2 = 0;
@@ -141,25 +152,36 @@ const App: React.FC<{}> = () => {
         }
       }
 
-	useEffect(() => {
-		// Initialize
-		if (canvasRef.current) {
-			canvasCtxRef.current = canvasRef.current.getContext('2d');
-			let ctx = canvasCtxRef.current;
-			makeRectangleShape(ctx,  paddle1.X,  paddle1.Y, paddle1.Width, paddle1.Height, 'blue' );
-			makeRectangleShape(ctx,  paddle2.X,  paddle1.Y, paddle2.Width, paddle2.Height, 'blue' );
-			makeCircleShape(ctx, ball.X, ball.Y, 10, 0, 'yellow');
-			makescores(ctx, score, dim);
-		}
-		}, []);
+    const onMouseDown = (event: React.MouseEvent<HTMLButtonElement>, score:score) => {
+		 handleMouseClick(event, score);
+	}; // calls the function that restart the game when "MOUSE-CLICK"
 
-	return <canvas
+    const onMouseMove =(event: React.MouseEvent<HTMLButtonElement>, canvasRef : HTMLCanvasElement | null, ctx: CanvasRenderingContext2D , paddle1: paddle) => {  // Controlling the User Paddle by calculating the position of the mouse.
+    	let mousePos: any = calculateMousePosition(canvasRef, ctx, event);
+    	paddle1.Y = mousePos.y - (paddle1.Height / 2);
+	}
+
+	const draw = (ctx: CanvasRenderingContext2D, paddle1:paddle, paddle2:paddle, ball:ball, score:score) => {
+		makeRectangleShape(ctx,  paddle1.X,  paddle1.Y, paddle1.Width, paddle1.Height, 'blue' );
+		makeRectangleShape(ctx,  paddle2.X,  paddle1.Y, paddle2.Width, paddle2.Height, 'blue' );
+		makeCircleShape(ctx, ball.X, ball.Y, 10, 0, 'yellow');
+		makescores(ctx, score, dim);
+	}
+
+	useEffect(() => {
+		setInterval((ctx: CanvasRenderingContext2D, paddle1:paddle, paddle2:paddle, ball:ball, score:score,  dim:dimcanvas) => {
+			draw(ctx, paddle1, paddle2, ball, score);
+			move(ctx, score, paddle1, paddle2, ball, dim);
+		}, 1000 / 40);
+	}, []);
+
+	return (<canvas
 	id = 'canvas'
 	style={{border : "1px solid #000"}}
 	width={800}
 	height={600}
 	ref={canvasRef}>
-	</canvas>
+	</canvas>);
 };
 
 export default App;
