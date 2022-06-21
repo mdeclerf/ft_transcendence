@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+
 import React, {useRef, useEffect, MouseEvent} from 'react';
 import './App.css';
 
@@ -33,7 +33,7 @@ const App: React.FC<{}> = () => {
 	let canvasRef = useRef<HTMLCanvasElement | null>(null);
 	let canvasCtxRef = React.useRef<CanvasRenderingContext2D | null>(null);
 
-	useEffect(() => { 
+	useEffect(() => {
 
 	let dim: dimcanvas = { width: 800, height: 600};
 	let paddle1: paddle = { X: 10, Y: dim.height / 2 - 50, Width: 15, Height: 100};
@@ -138,57 +138,30 @@ const App: React.FC<{}> = () => {
 		makescores();
 	}
 
-	const calculateMousePosition = (e: MouseEvent) => {
-		if(canvasRef)
-		{
-			let rect = canvasRef.getBoundingClientRect();
-			let root = document.documentElement;
-			let mouseX = e.clientX - rect.left - root.scrollLeft;
-			let mouseY = e.clientY - rect.top - root.scrollTop;
-			return { x: mouseX, y: mouseY }
+	
+	setInterval(() => {
+		draw();
+		move();
+	}, 1000 / 40);
+	
+}, []);
+
+	const handleEvent = (event: MouseEvent) => {
+		event.preventDefault();
+		if (event.type === "mousedown") {
+			console.log('DOWN');
+		} else {
+			console.log("up");
 		}
 	}
-
-	const CalculateMousePosition = (mouseEvent: MouseEvent) => {
-		if(canvasRef)
-		{
-			let rect = canvasRef.getBoundingClientRect();
-			let root = document.documentElement;
-			let mouseX = mouseEvent.clientX - rect.left - root.scrollLeft;
-			let mouseY = mouseEvent.clientY - rect.top - root.scrollTop;
-			return { x: mouseX, y: mouseY }
-		}
-      }
-
-      const handleMouseClick = (evt: MouseEvent) => {
-        if(score.haswon){
-        score.player1 = 0;
-        score.player2 = 0;
-        score.haswon = false;
-        }
-      }
-
-      window.addEventListener("mousedown", handleMouseClick);  // calls the function that restart the game when "MOUSE-CLICK"
-
-      window.addEventListener('mousemove', (evt: MouseEvent) => {  // Controlling the User Paddle by calculating the position of the mouse.
-        let mousePos = CalculateMousePosition(evt);
-        paddle1.Y = mousePos.y - (paddle1.Height / 2);
-      })
-
-	setInterval(() => {
-				draw();
-				move();
-			}, 1000 / 40);
-
-	}, []);
 
 	return (<canvas
 	id = 'canvas'
 	style={{border : "1px solid #000"}}
 	width={800}
 	height={600}
-	ref={canvasRef}
-	></canvas>);
+	onMouseDown={handleEvent}
+	ref={canvasRef}></canvas>);
 };
 
 export default App;
