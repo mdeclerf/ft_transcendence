@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, MouseEvent, useState} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import './styles.css'
 
 let paddleSpeed = 6;
@@ -48,9 +48,9 @@ const handleWin = (animationId: number, score:Score) => {
 	ctx.fillStyle = 'blue';
 	ctx.font = '50px Arial';
 	if (score.computer >= score.winning_score)
-		ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2);
-	else if (score.player >= score.winning_score)
 		ctx.fillText("COMPUTER WINS", canvas.width / 2, canvas.height / 2);
+	else if (score.player >= score.winning_score)
+		ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2);
 }
 
 const Canvas = () => {
@@ -64,17 +64,17 @@ const Canvas = () => {
 	const handlePlayClick = () => {
 	setPlayButton(current => !current)
 	};
-
+	
 	useEffect(() => {
 		if(canvasRef.current) {
 			canvas = canvasRef.current;
 			ctx = canvas.getContext('2d');
 		};
-
+		
 		leftPaddle = { x: 15, y: canvas.height / 2, width: 15, height: 100, dy: 0};
 		rightPaddle = { x: canvas.width - 15, y: canvas.height / 2, width: 15, height: 100, dy: 0 };
 		ball = { x: canvas.width / 2, y: canvas.height / 2, width: 15, height: 15, dy: ballSpeed, dx: -ballSpeed, reset: false};
-		score = { player:0, computer:0, winning_score: 2, haswon: false };
+		score = { player:0, computer:0, winning_score: 3, haswon: false };
 
 		window.addEventListener('keydown', (e) => {
 			if (e.code === "ArrowUp") {
@@ -134,8 +134,8 @@ const Canvas = () => {
 		{
 			ctx.fillStyle = 'blue';
 			ctx.font = '50px Arial';
-			ctx.fillText(score.player, canvas.width / 2 + 150, 60);
-			ctx.fillText(score.computer, canvas.width / 2 - 150, 60);
+			ctx.fillText(score.player, canvas.width / 2 - 150, 60);
+			ctx.fillText(score.computer, canvas.width / 2 + 150, 60);
 		}
 
 		ball.x += ball.dx;
@@ -158,9 +158,9 @@ const Canvas = () => {
 
 			ball.reset = true;
 			if (ball.x < 0)
-				score.player += 1;
-			else if (ball.x > canvas.width)
 				score.computer += 1;
+			else if (ball.x > canvas.width)
+				score.player += 1;
 
 			if (score.player >= score.winning_score || score.computer >= score.winning_score)
 			{
