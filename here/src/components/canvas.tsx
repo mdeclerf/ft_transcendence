@@ -74,7 +74,7 @@ const Canvas = () => {
 		leftPaddle = { x: 15, y: canvas.height / 2, width: 15, height: 100, dy: 0};
 		rightPaddle = { x: canvas.width - 15, y: canvas.height / 2, width: 15, height: 100, dy: 0 };
 		ball = { x: canvas.width / 2, y: canvas.height / 2, width: 15, height: 15, dy: ballSpeed, dx: -ballSpeed, reset: false};
-		score = { player:0, computer:0, winning_score: 4, haswon: false };
+		score = { player:0, computer:0, winning_score: 2, haswon: false };
 
 		window.addEventListener('keydown', (e) => {
 			if (e.code === "ArrowUp") {
@@ -164,8 +164,8 @@ const Canvas = () => {
 
 			if (score.player >= score.winning_score || score.computer >= score.winning_score)
 			{
-				playButton = false;
 				handleWin(animationId, score, playButton);
+				playButton = false;
 				score.computer = 0;
 				score.player = 0;
 			}
