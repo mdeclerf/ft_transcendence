@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
-
 .App {
 	width: 100vw;
 	height: 100vh;
@@ -7,7 +5,7 @@
 	flex-direction: column;
 	align-items: center;
 	background-color:white;
-	font-family: "Neucha", cursive;
+	font-family: "arial";
 }
 
 .heading {
@@ -17,6 +15,7 @@
 	color: blue;
 	z-index: 1;
 	text-align: center;
+	font-family: "arial";
 }
 
 canvas{
@@ -25,4 +24,3 @@ canvas{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-

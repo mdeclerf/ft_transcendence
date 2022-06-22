@@ -38,6 +38,21 @@ const collision = (obj1: Ball, obj2: Paddle) => {
         obj1.y + obj1.height > obj2.y;
 }
 
+const handleWin = (animationId: number, score:Score, playButton: boolean) => {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	cancelAnimationFrame(animationId);
+	ctx.fillStyle = 'yellow';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	ctx.textBaseline = 'middle';
+	ctx.textAlign = 'center';
+	ctx.fillStyle = 'blue';
+	ctx.font = '50px Arial';
+	if (score.computer >= score.winning_score)
+		ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2);
+	else if (score.player >= score.winning_score)
+		ctx.fillText("COMPUTER WINS", canvas.width / 2, canvas.height / 2);
+}
+
 const Canvas = () => {
 	let canvasRef = useRef<HTMLCanvasElement>(null);
 	let leftPaddle:Paddle; // player
@@ -45,9 +60,9 @@ const Canvas = () => {
 	let ball:Ball;
 	let score:Score;
 
-	const [button, setButton] = useState(false);
-	const handleClick = () => {
-		setButton(current => !current)
+	let [playButton, setPlayButton] = useState(false);
+	const handlePlayClick = () => {
+		setPlayButton(current => !current)
 	};
 
 	useEffect(() => {
@@ -62,10 +77,10 @@ const Canvas = () => {
 		score = { player:0, computer:0, winning_score: 4, haswon: false };
 
 		window.addEventListener('keydown', (e) => {
-			if (e.code === "ArrowDown") {
+			if (e.code === "ArrowUp") {
 			  leftPaddle.dy = -paddleSpeed;
 			}
-			else if (e.code === "ArrowUp") {
+			else if (e.code === "ArrowDown") {
 			  leftPaddle.dy = paddleSpeed;
 			}
 		});
@@ -82,12 +97,13 @@ const Canvas = () => {
 			}
 		});
 
-		if(button === true)
+		if (playButton === true)
 			loop();
-	}, [handleClick]);
+
+	}, [handlePlayClick]);
 
 	const loop = () => {
-		requestAnimationFrame(loop); // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+		let animationId: number = requestAnimationFrame(loop); // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		leftPaddle.y += leftPaddle.dy;
 		rightPaddle.y += rightPaddle.dy;
@@ -105,12 +121,29 @@ const Canvas = () => {
 		ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
 		ctx.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
 
+		let net = 8;
+		for (let i = net; i < canvas.height; i += net * 2) {
+			ctx.fillStyle = 'yellow';
+			ctx.fillRect(canvas.width / 2 - (net / 2), i, net, net);
+		};
+
+		ctx.fillStyle = 'black';
+		ctx.fillRect(ball.x, ball.y, ball.width, ball.height);
+
+		if (score.player < score.winning_score && score.computer < score.winning_score)
+		{
+			ctx.fillStyle = 'blue';
+			ctx.font = '50px Arial';
+			ctx.fillText(score.player, canvas.width / 2 + 150, 60);
+			ctx.fillText(score.computer, canvas.width / 2 - 150, 60);
+		}
+
 		ball.x += ball.dx;
 		ball.y += ball.dy;
 
 		rightPaddle.dy = ball.dy;
 
-		if(ball.y < 0) // to make the ball bounnnnce 
+		if(ball.y < 0)
 		{
 			ball.y = 0 + ball.height;
 			ball.dy *= -1;
@@ -131,16 +164,12 @@ const Canvas = () => {
 
 			if (score.player >= score.winning_score || score.computer >= score.winning_score)
 			{
+				playButton = false;
+				handleWin(animationId, score, playButton);
 				score.computer = 0;
 				score.player = 0;
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				ctx.fillStyle = 'blue';
-				ctx.font = '50px Arial';
-				if (score.player >= score.winning_score)
-					ctx.fillText("YOU WIN", canvas.width / 2 - 200, canvas.height / 2);
-				else
-					ctx.fillText("COMPUTER WINS", canvas.width / 2 - 200, canvas.height / 2);
 			}
+
 			setTimeout(() => {
 				ball.reset = false;
 				ball.x = canvas.width / 2;
@@ -156,29 +185,11 @@ const Canvas = () => {
 			ball.dx *= -1;
 			ball.x = rightPaddle.x - ball.width;
 		}
-
-		let net = 8;
-		for (let i = net; i < canvas.height; i += net * 2) {
-			ctx.fillStyle = 'yellow';
-			ctx.fillRect(canvas.width / 2 - (net / 2), i, net, net);
-		};
-
-		ctx.fillStyle = 'black';
-		ctx.fillRect(ball.x, ball.y, ball.width, ball.height);
-
-
-		if (score.player < score.winning_score && score.computer < score.winning_score)
-		{
-			ctx.fillStyle = 'blue';
-			ctx.font = '50px Arial';
-			ctx.fillText(score.player, canvas.width / 2 + 150, 60);
-			ctx.fillText(score.computer, canvas.width / 2 - 150, 60);
-		}
 	}
 
 	return (
 	<>
-	<button className='button' type='button' onClick={handleClick}>Play!</button>
+	<button className='button' type='button' onClick={handlePlayClick}>Play !</button>
 	<canvas ref = {canvasRef} width = "1000" height = "600" />
 	</>
 	);
