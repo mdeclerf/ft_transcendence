@@ -1,4 +1,5 @@
-import React, {useRef, useEffect, MouseEvent} from 'react';
+import React, {useRef, useEffect, MouseEvent, useState} from 'react';
+import './styles.css'
 
 let paddleSpeed = 6;
 let ballSpeed = 4;
@@ -30,11 +31,7 @@ interface Ball {
 	reset:boolean
 }
 
-function sleep(ms: number) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export const collision = (obj1: Ball, obj2: Paddle) => {
+const collision = (obj1: Ball, obj2: Paddle) => {
     return obj1.x < obj2.x + obj2.width &&
         obj1.x + obj1.width > obj2.x &&
         obj1.y < obj2.y + obj2.height &&
@@ -47,7 +44,11 @@ const Canvas = () => {
 	let rightPaddle:Paddle; // computer
 	let ball:Ball;
 	let score:Score;
-	let ON: boolean = false;
+
+	const [button, setButton] = useState(false);
+	const handleClick = () => {
+		setButton(current => !current)
+	};
 
 	useEffect(() => {
 		if(canvasRef.current) {
@@ -59,10 +60,6 @@ const Canvas = () => {
 		rightPaddle = { x: canvas.width - 15, y: canvas.height / 2, width: 15, height: 100, dy: 0 };
 		ball = { x: canvas.width / 2, y: canvas.height / 2, width: 15, height: 15, dy: ballSpeed, dx: -ballSpeed, reset: false};
 		score = { player:0, computer:0, winning_score: 4, haswon: false };
-
-		function start_playing () {
-			ON = true;
-		}
 
 		window.addEventListener('keydown', (e) => {
 			if (e.code === "ArrowDown") {
@@ -85,9 +82,9 @@ const Canvas = () => {
 			}
 		});
 
-		if(ON = true)
+		if(button === true)
 			loop();
-	}, []);
+	}, [handleClick]);
 
 	const loop = () => {
 		requestAnimationFrame(loop); // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
@@ -179,11 +176,12 @@ const Canvas = () => {
 		}
 	}
 
-	return ( 
-	<button className='button' onClick={start_playing}>
-	Start playing !
-	</button>
-	<canvas ref = {canvasRef} width = "1000" height = "600" />)
+	return (
+	<>
+	<button className='button' type='button' onClick={handleClick}>Play!</button>
+	<canvas ref = {canvasRef} width = "1000" height = "600" />
+	</>
+	);
 };
 
 export default Canvas;

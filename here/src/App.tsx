@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useState} from 'react';
 import './App.css';
 
 import Canvas from './components/canvas';
-import Play from './components/play';
 
 function App() {
   return (
     <div className="App">
-	<Play/>
+	<span className = 'heading' >Pong</span>
     <Canvas/>
     </div>
   );

@@ -2,16 +2,20 @@ import React from 'react';
 import './styles.css'
 
 const Play = () => {
+  const [on, setOn] = React.useState(false);
 
-  function start_playing() {
-    alert("test");
-  }
+  const handleClick = () => {
+    setOn(true);
+  };
 
   return (
-    <button className='button' onClick={start_playing}>
-      Start playing !
-    </button>
+    <div>
+      <button className="button" onClick={handleClick}>
+        Start playing
+      </button>
+      {on}
+    </div>
   );
-}
+};
 
 export default Play;
