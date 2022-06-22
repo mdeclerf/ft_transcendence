@@ -38,7 +38,7 @@ const collision = (obj1: Ball, obj2: Paddle) => {
         obj1.y + obj1.height > obj2.y;
 }
 
-const handleWin = (animationId: number, score:Score, playButton: boolean) => {
+const handleWin = (animationId: number, score:Score) => {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	cancelAnimationFrame(animationId);
 	ctx.fillStyle = 'yellow';
@@ -62,7 +62,7 @@ const Canvas = () => {
 
 	let [playButton, setPlayButton] = useState(false);
 	const handlePlayClick = () => {
-		setPlayButton(current => !current)
+	setPlayButton(current => !current)
 	};
 
 	useEffect(() => {
@@ -164,8 +164,8 @@ const Canvas = () => {
 
 			if (score.player >= score.winning_score || score.computer >= score.winning_score)
 			{
-				handleWin(animationId, score, playButton);
-				playButton = false;
+				setPlayButton(current => !current);
+				handleWin(animationId, score);
 				score.computer = 0;
 				score.player = 0;
 			}
