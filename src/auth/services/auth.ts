@@ -1,5 +1,5 @@
 import { User } from "src/typeorm";
-import { UserDetails } from "../../../utils/types";
+import { UserDetails } from "../../utils/types";
 
 export interface AuthenticationProvider {
 	validateUser(details: UserDetails);
