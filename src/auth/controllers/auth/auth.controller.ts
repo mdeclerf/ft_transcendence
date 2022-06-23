@@ -1,6 +1,6 @@
 import { Controller, Get, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { IntraAuthGuard } from 'src/auth/guards/intra-oauth.guard';
+import { AuthenticatedGuard, IntraAuthGuard } from 'src/auth/guards/intra-oauth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +18,10 @@ export class AuthController {
 	}
 
 	@Get('status')
-	status() {}
+	@UseGuards(AuthenticatedGuard)
+	status() {
+		return 'ok';
+	}
 
 	@Get('logout')
 	logout() {}

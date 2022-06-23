@@ -2,7 +2,6 @@ import { Strategy, Profile } from 'passport-42';
 import { PassportStrategy } from '@nestjs/passport';
 import { Inject, Injectable } from '@nestjs/common';
 import { AuthenticationProvider } from '../services/auth/auth';
-import { UserDetails } from 'src/utils/types';
 
 @Injectable()
 export class IntraStrategy extends PassportStrategy(Strategy, '42') {
@@ -18,7 +17,7 @@ export class IntraStrategy extends PassportStrategy(Strategy, '42') {
 	async validate(accessToken: string, refreshToken: string, profile: Profile) {
 		const { id: intraId, username, displayName } = profile;
 		const details = { intraId, username, displayName };
-		console.log(profile);
-		await this.authService.validateUser(details);
+		// console.log(profile);
+		return this.authService.validateUser(details);
 	}
 }
