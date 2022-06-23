@@ -46,7 +46,7 @@ const handleWin = (animationId: number, score:Score) => {
 	ctx.textBaseline = 'middle';
 	ctx.textAlign = 'center';
 	ctx.fillStyle = 'blue';
-	ctx.font = '50px Arial';
+	ctx.font = '80px Arial';
 	if (score.computer >= score.winning_score)
 		ctx.fillText("COMPUTER WINS", canvas.width / 2, canvas.height / 2);
 	else if (score.player >= score.winning_score)
@@ -55,16 +55,21 @@ const handleWin = (animationId: number, score:Score) => {
 
 const Canvas = () => {
 	let canvasRef = useRef<HTMLCanvasElement>(null);
-	let leftPaddle:Paddle; // player
-	let rightPaddle:Paddle; // computer
+	let leftPaddle:Paddle;
+	let rightPaddle:Paddle;
 	let ball:Ball;
 	let score:Score;
 
+	/************************ play button set up *************************/
 	let [playButton, setPlayButton] = useState(false);
+	let [start, setStart] = useState(0);
 	const handlePlayClick = () => {
-	setPlayButton(current => !current)
+		if (start === 0)
+			setStart(start += 1);
+		setPlayButton(current => !current)
 	};
-	
+
+	/************************ hook *************************/
 	useEffect(() => {
 		if(canvasRef.current) {
 			canvas = canvasRef.current;
@@ -76,6 +81,7 @@ const Canvas = () => {
 		ball = { x: canvas.width / 2, y: canvas.height / 2, width: 15, height: 15, dy: ballSpeed, dx: -ballSpeed, reset: false};
 		score = { player:0, computer:0, winning_score: 3, haswon: false };
 
+		/************************ keys listener *************************/
 		window.addEventListener('keydown', (e) => {
 			if (e.code === "ArrowUp") {
 			  leftPaddle.dy = -paddleSpeed;
@@ -91,11 +97,18 @@ const Canvas = () => {
 			}
 		});
 
-		window.addEventListener('keyup', (e) => {
-			if (e.code === "ArrowDown" || e.code === "ArrowUp") {
-			  leftPaddle.dy = 0;
-			}
-		});
+		/************************ start *************************/
+		if (playButton === false && start === 0)
+		{
+			ctx.fillStyle = 'blue';
+			ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+			ctx.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+			let net = 8;
+			for (let i = net; i < canvas.height; i += net * 2) {
+				ctx.fillStyle = 'yellow';
+				ctx.fillRect(canvas.width / 2 - (net / 2), i, net, net);
+			};
+		}
 
 		if (playButton === true)
 			loop();
@@ -108,7 +121,8 @@ const Canvas = () => {
 		leftPaddle.y += leftPaddle.dy;
 		rightPaddle.y += rightPaddle.dy;
 
-		if(leftPaddle.y < 0) // to make sure the paddle dont go to hight or too low
+		/************************ make sure the paddle stays within the canvas height *************************/
+		if(leftPaddle.y < 0)
 			leftPaddle.y = 0;
 		else if (leftPaddle.y > canvas.height - leftPaddle.height)
 			leftPaddle.y = canvas.height - leftPaddle.height;
@@ -117,6 +131,7 @@ const Canvas = () => {
 		else if (rightPaddle.y > canvas.height - rightPaddle.height)
 			rightPaddle.y = canvas.height - rightPaddle.height;
 
+		/************************ fill all the elements *************************/
 		ctx.fillStyle = 'blue';
 		ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
 		ctx.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
@@ -138,11 +153,14 @@ const Canvas = () => {
 			ctx.fillText(score.computer, canvas.width / 2 + 150, 60);
 		}
 
+		/************************ animate the ball *************************/
 		ball.x += ball.dx;
 		ball.y += ball.dy;
 
+		/************************ ai computer paddle *************************/
 		rightPaddle.dy = ball.dy;
 
+		/************************ ball walls bouncing *************************/
 		if(ball.y < 0)
 		{
 			ball.y = 0 + ball.height;
@@ -154,6 +172,7 @@ const Canvas = () => {
 			ball.dy *= -1;
 		}
 
+		/************************ scores *************************/
 		if((ball.x < 0 || ball.x > canvas.width) && !ball.reset) {
 
 			ball.reset = true;
@@ -164,8 +183,8 @@ const Canvas = () => {
 
 			if (score.player >= score.winning_score || score.computer >= score.winning_score)
 			{
-				setPlayButton(current => !current);
 				handleWin(animationId, score);
+				setPlayButton(current => !current);
 				score.computer = 0;
 				score.player = 0;
 			}
@@ -177,6 +196,7 @@ const Canvas = () => {
 				}, 100);
 		};
 
+		/************************ ball paddle bouncing *************************/
 		if(collision(ball, leftPaddle)) {
 			ball.dx *= -1;
 			ball.x = leftPaddle.x + leftPaddle.width;
@@ -189,7 +209,7 @@ const Canvas = () => {
 
 	return (
 	<>
-	<button className='button' type='button' onClick={handlePlayClick}>Play !</button>
+	<button className='button' type='button' onClick={handlePlayClick}>PLAY</button>
 	<canvas ref = {canvasRef} width = "1000" height = "600" />
 	</>
 	);
