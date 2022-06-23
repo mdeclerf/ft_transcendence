@@ -7,8 +7,8 @@ let canvas: HTMLCanvasElement;
 let ctx: any;
 
 interface Score {
-	player: number,
-	computer: number,
+	L: number,
+	R: number,
 	winning_score: number,
 	haswon: boolean
 }
@@ -47,9 +47,9 @@ const handleWin = (animationId: number, score:Score) => {
 	ctx.textAlign = 'center';
 	ctx.fillStyle = 'blue';
 	ctx.font = '80px Arial';
-	if (score.computer >= score.winning_score)
+	if (score.R >= score.winning_score)
 		ctx.fillText("COMPUTER WINS", canvas.width / 2, canvas.height / 2);
-	else if (score.player >= score.winning_score)
+	else if (score.L >= score.winning_score)
 		ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2);
 }
 
@@ -79,7 +79,7 @@ const Canvas = () => {
 		leftPaddle = { x: 15, y: canvas.height / 2, width: 15, height: 100, dy: 0};
 		rightPaddle = { x: canvas.width - 15, y: canvas.height / 2, width: 15, height: 100, dy: 0 };
 		ball = { x: canvas.width / 2, y: canvas.height / 2, width: 15, height: 15, dy: ballSpeed, dx: -ballSpeed, reset: false};
-		score = { player:0, computer:0, winning_score: 3, haswon: false };
+		score = { L:0, R:0, winning_score: 3, haswon: false };
 
 		/************************ keys listener *************************/
 		window.addEventListener('keydown', (e) => {
@@ -145,19 +145,19 @@ const Canvas = () => {
 		ctx.fillStyle = 'black';
 		ctx.fillRect(ball.x, ball.y, ball.width, ball.height);
 
-		if (score.player < score.winning_score && score.computer < score.winning_score)
+		if (score.L < score.winning_score && score.R < score.winning_score)
 		{
 			ctx.fillStyle = 'blue';
 			ctx.font = '50px Arial';
-			ctx.fillText(score.player, canvas.width / 2 - 150, 60);
-			ctx.fillText(score.computer, canvas.width / 2 + 150, 60);
+			ctx.fillText(score.L, canvas.width / 2 - 150, 60);
+			ctx.fillText(score.R, canvas.width / 2 + 150, 60);
 		}
 
 		/************************ animate the ball *************************/
 		ball.x += ball.dx;
 		ball.y += ball.dy;
 
-		/************************ ai computer paddle *************************/
+		/************************ ai R paddle *************************/
 		rightPaddle.dy = ball.dy;
 
 		/************************ ball walls bouncing *************************/
@@ -177,16 +177,16 @@ const Canvas = () => {
 
 			ball.reset = true;
 			if (ball.x < 0)
-				score.computer += 1;
+				score.R += 1;
 			else if (ball.x > canvas.width)
-				score.player += 1;
+				score.L += 1;
 
-			if (score.player >= score.winning_score || score.computer >= score.winning_score)
+			if (score.L >= score.winning_score || score.R >= score.winning_score)
 			{
 				handleWin(animationId, score);
 				setPlayButton(current => !current);
-				score.computer = 0;
-				score.player = 0;
+				score.R = 0;
+				score.L = 0;
 			}
 
 			setTimeout(() => {
