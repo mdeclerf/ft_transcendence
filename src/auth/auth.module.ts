@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/typeorm';
+import { Session, User } from 'src/typeorm';
 import { AuthController } from './controllers/auth/auth.controller';
 import { AuthService } from './services/auth/auth.service';
 import { IntraStrategy } from './strategies/intra-oauth.strategy';
@@ -17,7 +17,7 @@ import { SessionSerializer } from './utils/Serializer';
     },
   ],
   imports: [
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User, Session])
   ]
 })
 export class AuthModule {}

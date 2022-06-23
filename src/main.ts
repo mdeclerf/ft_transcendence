@@ -2,10 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { TypeormStore } from 'connect-typeorm/out';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Session } from './typeorm';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const PORT = process.env.PORT || 3001;
+  const sessionRepo = app.get(getRepositoryToken(Session));
   app.setGlobalPrefix('api');
   app.use(
     session({
@@ -15,6 +19,7 @@ async function bootstrap() {
       secret: 'aousdhgaoisdhgqoiwehtoqiwer',
       resave: false,
       saveUninitialized: false,
+      store: new TypeormStore().connect(sessionRepo),
     }),
   );
   app.use(passport.initialize());
