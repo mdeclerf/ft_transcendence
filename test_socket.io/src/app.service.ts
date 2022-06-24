@@ -8,6 +8,8 @@ export class AppService {
   constructor(
     @InjectRepository(Chat) private chatRepository: Repository<Chat>,
   ) {}
+
+  //https://javascript.info/async-await
   async createMessage(chat: Chat): Promise<Chat> {
     return await this.chatRepository.save(chat);
   }

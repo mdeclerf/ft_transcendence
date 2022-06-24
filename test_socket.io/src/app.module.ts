@@ -21,3 +21,4 @@ import { Chat } from './chat.entity';
   providers: [AppService, AppGateway],
 })
 export class AppModule {}
+

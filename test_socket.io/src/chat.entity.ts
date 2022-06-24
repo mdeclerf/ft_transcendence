@@ -4,7 +4,8 @@ import {
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
   } from 'typeorm';
-  
+
+  // https://typeorm.io/entities
   @Entity()
   export class Chat {
 	@PrimaryGeneratedColumn('uuid')
@@ -18,4 +19,4 @@ import {
   
 	@CreateDateColumn()
 	createdAt: Date;
-  }
+}
