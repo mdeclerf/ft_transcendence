@@ -219,6 +219,8 @@
 
 // export default Canvas;
 
+///////////////////////////////////////////////////////////////////
+
 import React, {useRef, useEffect, useState} from 'react';
 import io from 'socket.io-client';
 import './styles.css'
@@ -236,58 +238,53 @@ interface Paddle {
 }
 
 const Canvas = () => {
-	let canvasRef = useRef<HTMLCanvasElement>(null);
-	let socketRef = useRef(null);
+	let canvasRef = React.useRef<HTMLCanvasElement>(null);
+	let socketRef = React.useRef<any>(null);
 	let leftPaddle:Paddle;
 
 	/************************ hook *************************/
 	useEffect(() => {
+
 		if(canvasRef.current) {
 			canvas = canvasRef.current;
 			ctx = canvas.getContext('2d');
 		};
-		
+
 		leftPaddle = { x: 15, y: canvas.height / 2, width: 15, height: 100, dy: 0};
 
 		/************************ keys listener *************************/
 		window.addEventListener('keydown', (e) => {
 			if (e.code === "ArrowUp") {
-			  leftPaddle.dy = -paddleSpeed;
+				leftPaddle.dy = -paddleSpeed;
 			}
 			else if (e.code === "ArrowDown") {
-			  leftPaddle.dy = paddleSpeed;
+				leftPaddle.dy = paddleSpeed;
 			}
 		});
 
 		window.addEventListener('keyup', (e) => {
 			if (e.code === "ArrowDown" || e.code === "ArrowUp") {
-			  leftPaddle.dy = 0;
+				leftPaddle.dy = 0;
 			}
 		});
 
-		/************************ start *************************/
-		ctx.fillStyle = 'blue';
-		ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+		/************************ draw lines *************************/
+		const drawRectangle = (paddle:Paddle) => {
+			ctx.fillStyle = 'blue';
+			ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+			socketRef.current.emit('drawing');
+		};
 
-		socketRef.current = io.connect('/');
+		const onKeyEvent = (paddle:Paddle) => {
+			drawRectangle(paddle);
+		}
+
 		if (socketRef.current)
-		socketRef.current.on();
-		loop();
+		{
+			socketRef.current = io('http://localhost:3000');
+			socketRef.current.on('drawing', onKeyEvent);
+		}
 	}, []);
-
-	const loop = () => {
-		requestAnimationFrame(loop); // https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		leftPaddle.y += leftPaddle.dy;
-
-		if(leftPaddle.y < 0)
-			leftPaddle.y = 0;
-		else if (leftPaddle.y > canvas.height - leftPaddle.height)
-			leftPaddle.y = canvas.height - leftPaddle.height;
-
-		ctx.fillStyle = 'blue';
-		ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
-	}
 
 	return (
 	<canvas ref = {canvasRef} width = "1000" height = "600" />
