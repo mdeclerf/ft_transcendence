@@ -63,6 +63,7 @@ const Canvas = () => {
 	/************************ play button set up *************************/
 	let [playButton, setPlayButton] = useState(false);
 	let [start, setStart] = useState(0);
+
 	const handlePlayClick = () => {
 		if (start === 0)
 			setStart(start += 1);
