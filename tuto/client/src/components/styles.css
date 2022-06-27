@@ -1,0 +1,12 @@
+.button {
+	position: relative;
+	width:30%;
+	margin: 60px;
+	border-radius: 50px;
+	padding: 20px 30px;
+	font-size: 25px;
+	border: none;
+	font-family: "arial";
+	background-color: blue;
+	color: white;
+}
