@@ -225,24 +225,36 @@ import React, {useRef, useEffect, useState} from 'react';
 import io from 'socket.io-client';
 import './styles.css'
 
-let paddleSpeed = 6;
-let canvas: HTMLCanvasElement;
-let ctx: any;
-
 interface Paddle {
 	x:number,
 	y:number,
 	width:number,
 	height:number,
 	dy:number,
+	Speed: number;
 }
 
-const Canvas = () => {
-	let canvasRef = React.useRef<HTMLCanvasElement>(null);
-	let socketRef = React.useRef<any>(null);
-	let leftPaddle:Paddle;
 
-	/************************ hook *************************/
+const Canvas = () => {
+
+	var socket = io();
+	let canvas: HTMLCanvasElement;
+	let ctx: any;
+	let leftPaddle:Paddle;
+	let canvasRef = React.useRef<HTMLCanvasElement>(null);
+
+	const drawPaddle = () => {
+		ctx.fillStyle = 'blue';
+		ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+	}
+	
+	const updateDrawing = () => {
+		requestAnimationFrame(updateDrawing);
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		leftPaddle.y += leftPaddle.dy;
+		drawPaddle();
+	}
+
 	useEffect(() => {
 
 		if(canvasRef.current) {
@@ -250,15 +262,14 @@ const Canvas = () => {
 			ctx = canvas.getContext('2d');
 		};
 
-		leftPaddle = { x: 15, y: canvas.height / 2, width: 15, height: 100, dy: 0};
+		leftPaddle = { x: 15, y: canvas.height / 2, width: 15, height: 100, dy: 0, Speed: 6};
 
-		/************************ keys listener *************************/
 		window.addEventListener('keydown', (e) => {
 			if (e.code === "ArrowUp") {
-				leftPaddle.dy = -paddleSpeed;
+				leftPaddle.dy = -leftPaddle.Speed;
 			}
 			else if (e.code === "ArrowDown") {
-				leftPaddle.dy = paddleSpeed;
+				leftPaddle.dy = leftPaddle.Speed;
 			}
 		});
 
@@ -268,24 +279,10 @@ const Canvas = () => {
 			}
 		});
 
-		/************************ draw lines *************************/
-		const drawRectangle = (paddle:Paddle) => {
-			ctx.fillStyle = 'blue';
-			ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-			socketRef.current.emit('drawing');
-		};
+		updateDrawing();
 
-		const onKeyEvent = (paddle:Paddle) => {
-			drawRectangle(paddle);
-		}
-
-		if (socketRef.current)
-		{
-			socketRef.current = io('http://localhost:3000');
-			socketRef.current.on('drawing', onKeyEvent);
-		}
 	}, []);
-
+	
 	return (
 	<canvas ref = {canvasRef} width = "1000" height = "600" />
 	);
