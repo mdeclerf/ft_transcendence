@@ -9,9 +9,12 @@ export class User {
 	@Column({ name: 'intra_id' , unique: true })
 	intraId: string;
 
-	// @Column()
-	// username: string;
+	@Column()
+	username: string;
 
 	@Column({ name: 'display_name' })
 	displayName: string;
+
+	@Column({ name: 'photo_url', nullable: true})
+	photoURL: string;
 }

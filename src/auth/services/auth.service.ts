@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/typeorm';
-import { UserDetails } from 'src/utils/types';
+import { User } from '../../typeorm';
+import { UserDetails } from '../../utils/types';
 import { AuthenticationProvider } from './auth';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class AuthService implements AuthenticationProvider {
 	}
 
 	createUser(details: UserDetails) {
-		console.log('Creating user');
+		// console.log('Creating user');
 		const user = this.userRepo.create(details);
 		return this.userRepo.save(user);
 	}

@@ -1,5 +1,5 @@
-import { ISession } from "connect-typeorm/out";
-import { Column, Entity, Index, PrimaryColumn } from "typeorm";
+import { ISession } from "@freshgiammi/connect-typeorm/out";
+import { Column, DeleteDateColumn, Entity, Index, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Session implements ISession {
@@ -10,6 +10,9 @@ export class Session implements ISession {
 
 	@PrimaryColumn('varchar', { length: 255 })
 	id: string;
+
+	@DeleteDateColumn({ name: 'destroyed_at', nullable: true})
+	destroyedAt?: Date;
 
 	@Column('text')
 	json: string;

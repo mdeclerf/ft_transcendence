@@ -1,4 +1,4 @@
-import { User } from "src/typeorm";
+import { User } from "../../typeorm";
 import { UserDetails } from "../../utils/types";
 
 export interface AuthenticationProvider {

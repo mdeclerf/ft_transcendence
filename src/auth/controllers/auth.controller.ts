@@ -1,7 +1,6 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { nextTick } from 'process';
-import { AuthenticatedGuard, IntraAuthGuard } from 'src/auth/guards/intra-oauth.guard';
+import { Request } from 'express';
+import { AuthenticatedGuard, IntraAuthGuard } from '../guards/intra-oauth.guard';
 
 @Controller('auth')
 export class AuthController {

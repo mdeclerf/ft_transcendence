@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Session, User } from 'src/typeorm';
+import { Session, User } from '../typeorm';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { IntraStrategy } from './strategies/intra-oauth.strategy';
