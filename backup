@@ -1,0 +1,65 @@
+const socket: Socket = io('http://localhost:3000/');
+
+	const [message, setMessage] = useState("");
+	const [messageReceived, setMessageReceived] = useState("");
+
+	let canvas: HTMLCanvasElement;
+	let ctx: any;
+	let canvasRef = useRef<HTMLCanvasElement>(null);
+	let padd:Paddle;
+
+	const sendMessage = (message:string) => {
+		socket.emit("send_message", message);
+	};
+
+	useEffect( () => {
+		socket.on("receive_message", (data) => {
+			setMessageReceived(data.message);
+		})
+	});
+
+	useEffect(() => {
+		if(canvasRef.current) {
+			canvas = canvasRef.current;
+			ctx = canvas.getContext('2d');
+		};
+
+		padd = { x: canvas.width / 2, y: canvas.height / 2, width: 15, height: 100, dy: 0, speed: 6};
+
+		window.addEventListener('keydown', (e) => {
+			if (e.code === "ArrowUp") {
+			  padd.dy = -padd.speed;
+			  setMessage(padd.dy.toString());
+			  sendMessage(message);
+			  console.log('in key up', message);
+			}
+			else if (e.code === "ArrowDown") {
+			  padd.dy = padd.speed;
+			  setMessage(padd.dy.toString());
+			  sendMessage(message);
+			  console.log('in key up', message);
+			}
+		});
+
+		window.addEventListener('keyup', (e) => {
+			if (e.code === "ArrowDown" || e.code === "ArrowUp") {
+			  padd.dy = 0;
+			  setMessage(padd.dy.toString());
+			  sendMessage(message);
+			  console.log('in key down', message);
+			}
+		});
+		loop();
+	}, []);
+
+	const loop = () => {
+		requestAnimationFrame(loop); 
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		padd.y += padd.dy;
+		console.log('in loop', messageReceived);
+		// padd.y += parseInt(messageReceived);
+		ctx.fillStyle = 'blue';
+		ctx.fillRect(padd.x, padd.y, padd.width, padd.height);
+	}
+
+	return (<canvas ref = {canvasRef} width = "1000" height = "600" />);
