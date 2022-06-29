@@ -17,6 +17,7 @@ const App = () => {
 	let hint: string = "init";
 
 	const draw = (y: number) => {
+		console.log(y);
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.fillStyle = 'blue';
 		ctx.fillRect(paddX, y, W, H);
@@ -60,9 +61,13 @@ const App = () => {
 			ctx = canvas.getContext('2d');
 		};
 
-		// socket.on("receive_message", (data) => {
-		// 	draw(data.message);
-		// });
+		socket.emit("init", "move_stop");
+
+		socket.on("receive_message", (data) => {
+			console.log("sjdf", data);
+			draw(parseInt(data));
+		});
+		draw(1);
 
 		window.addEventListener('keydown', test1);
 
