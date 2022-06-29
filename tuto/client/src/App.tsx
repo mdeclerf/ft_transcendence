@@ -24,25 +24,34 @@ const App = () => {
 
 	const test1 = (e: any) => {
 		if (e.code === "ArrowUp") {
-			socket.emit("send_message", "move_up");
-			console.log("up");
-			hint = "up";
+			if(hint !== "up")
+			{
+				socket.emit("send_message", "move_up");
+				console.log("up");
+				hint = "up";
+			}
 		}
 		else if (e.code === "ArrowDown") {
-			socket.emit("send_message", "move_down");
-			console.log("up");
-			hint = "down";
+			if(hint !== "down")
+			{
+				socket.emit("send_message", "move_down");
+				console.log("down");
+				hint = "down";
+			}
 		}
 	}
 
 	const test2 = (e: any) => {
 		if (e.code === "ArrowDown" || e.code === "ArrowUp") {
-			socket.emit("send_message", "stop");
-			console.log("stop");
-			hint = "stop";
+			if(hint !== "stop")
+			{
+				socket.emit("send_message", "move_stop");
+				console.log("stop");
+				hint = "stop";
+			}
 		}
 	}
-		
+
 	useEffect(() => {
 		console.log("entered");
 
