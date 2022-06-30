@@ -28,8 +28,7 @@ const draw_board = (player1_score: number, player2_score:number) : string => {
 }
 
 function Canvas() {
-	
-	// const [player_status, setPlayer_status] = useState("default");
+
 	const [winning_score, setWinning_score] = useState(0);
 	const [score_board, setScore_board] = useState("");
 
@@ -62,7 +61,6 @@ function Canvas() {
 		});
 		
 		ws.on('players', (message:string) => {
-			// setPlayer_status(message);
 			player_status = message;
 		});
 
@@ -75,7 +73,6 @@ function Canvas() {
 		return () => {
 			ws.close();
 		}
-		// eslint-disable-next-line
 	}, []);
 
 	return (
