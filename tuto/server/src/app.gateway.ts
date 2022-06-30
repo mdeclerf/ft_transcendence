@@ -63,14 +63,16 @@ class Game {
 		return (this.ball_x >= x && this.ball_x <= x + 20) && (this.ball_y >= player.y_pos && this.ball_y <= player.y_pos + 70);
 	}
 
-	change_ball_pos() {
+	change_ball_pos(player_1: Player, player_2: Player) {
 		this.ball_x += 10 * Math.cos(this.ball_angle);
 		this.ball_y += 10 * Math.sin(this.ball_angle);
 		if (this.ball_x > 700) {
+			player_1.score += 1;
 			this.ball_x = 350;
 			this.ball_y = 250;
 			this.ball_angle = random_ball();
 		} else if (this.ball_x < 0) {
+			player_2.score += 1;
 			this.ball_x = 350;
 			this.ball_y = 250;
 			this.ball_angle = random_ball();
@@ -91,14 +93,16 @@ class Game {
 	async run_game() {
 		this.ball_angle = random_ball();
 		while (this.is_running) {
-			this.change_ball_pos();
+			this.change_ball_pos(this.first_player, this.second_player);
 			this.change_position(this.first_player);
 			this.change_position(this.second_player);
-			this.first_player.socket.emit("getPosition", `${this.first_player.y_pos} ${this.second_player.y_pos} ${this.ball_x} ${this.ball_y}`);
-			this.second_player.socket.emit("getPosition", `${this.second_player.y_pos} ${this.first_player.y_pos} ${700 - this.ball_x} ${this.ball_y}`);
+			this.first_player.socket.emit("getPosition", `${this.first_player.y_pos} ${this.second_player.y_pos} ${this.ball_x} ${this.ball_y} ${this.first_player.score} ${this.second_player.score}`);
+			this.second_player.socket.emit("getPosition", `${this.second_player.y_pos} ${this.first_player.y_pos} ${700 - this.ball_x} ${this.ball_y} ${this.first_player.score} ${this.second_player.score} `);
 			for (let index = 0; index < this.spectator.length; index++) {
-				this.spectator[index].socket.emit("getPosition", `${this.first_player.y_pos} ${this.second_player.y_pos} ${this.ball_x} ${this.ball_y}`);
+				this.spectator[index].socket.emit("getPosition", `${this.first_player.y_pos} ${this.second_player.y_pos} ${this.ball_x} ${this.ball_y} ${this.first_player.score} ${this.second_player.score}`);
 			}
+			if (this.first_player.score >= this.winning_score || this.second_player.score >= this.winning_score)
+				this.is_running = false;
 			await sleep(50);
 		}
 	}
@@ -162,6 +166,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 	afterInit(server: any) {}
 
 	handleConnection(client: Socket, ...args: any[]) {
+
+		client.emit("winning_score", this.game.winning_score.toString());
+
 		if (this.game.first_player == null) {
 			client.emit("players", "first player");
 		}

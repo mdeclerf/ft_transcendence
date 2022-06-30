@@ -6,6 +6,7 @@ const ws = io("http://localhost:3001");
 const up_key: string = "ArrowUp";
 const down_key: string = "ArrowDown";
 let last_send: string = "ArrowDown";
+let player_status: string;
 
 const draw_players = (context:any, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
 	context.clearRect(-100, -100, context.canvas.width + 100, context.canvas.height + 100);
@@ -17,9 +18,21 @@ const draw_players = (context:any, player1_y: number, player2_y: number, ball_x:
 	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
 }
 
+const draw_board = (player1_score: number, player2_score:number) : string => {
+	if (player_status === 'first player')
+		return `${player1_score} vs ${player2_score }`
+	else if (player_status === 'second player')
+		return `${player2_score} vs ${player1_score}`
+	else
+		return `player 1: ${player1_score} vs player 2: ${player2_score}`
+}
+
 function Canvas() {
 	
-	const [player_status, setPlayer_status] = useState("default");
+	// const [player_status, setPlayer_status] = useState("default");
+	const [winning_score, setWinning_score] = useState(0);
+	const [score_board, setScore_board] = useState("");
+
 	const canvasRef = useRef(null);
 	useEffect(() => {
 		const canvas: any = canvasRef.current;
@@ -44,28 +57,36 @@ function Canvas() {
 			}
 		})
 
+		ws.on('winning_score', (message:string) => {
+			setWinning_score(parseInt(message));
+		});
+		
+		ws.on('players', (message:string) => {
+			// setPlayer_status(message);
+			player_status = message;
+		});
+
 		ws.on('getPosition', (message: string) => {
 			let data = message.split(" ");
 			draw_players(context, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
+			setScore_board(draw_board(parseInt(data[4]), parseInt(data[5])));
 		});
-
-		ws.on('players', (message:string) => {
-			console.log("players", message);
-			setPlayer_status(message);
-		})
 
 		return () => {
 			ws.close();
 		}
-
+		// eslint-disable-next-line
 	}, []);
 
 	return (
 		<>
-		<h1>{player_status}</h1>
+		<div>
+		<p>Player status : {player_status}</p>
+		<p>Winning score : {winning_score}</p>
+		<p>{score_board}</p>
+		</div>
 		<div className="Canvas">
 			<canvas ref={canvasRef} width="700" height="500">
-				Désolé, votre navigateur ne prend pas en charge &lt;canvas&gt;.
 			</canvas>
 		</div>
 		</>
