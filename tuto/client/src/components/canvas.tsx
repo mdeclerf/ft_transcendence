@@ -1,91 +1,75 @@
+import React, { useEffect, useRef, useState} from 'react';
+import './styles.css';
+import { io } from "socket.io-client";
 
-import React from 'react';
-import { useEffect, useState, useRef } from 'react';
-import './App.css';
-import socketio, { Socket, io } from "socket.io-client";
-import { syncBuiltinESMExports } from 'module';
+const ws = io("http://localhost:3001");
+const up_key: string = "ArrowUp";
+const down_key: string = "ArrowDown";
+let last_send: string = "ArrowDown";
 
-interface Paddle {
-	x:number,
-	y:number,
-	width:number,
-	height:number,
-	dy:number,
-	speed: number
+const draw_players = (context:any, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
+	context.clearRect(-100, -100, context.canvas.width + 100, context.canvas.height + 100);
+	context.fillStyle = 'blue';
+	context.fillRect(ball_x -5, ball_y - 5, 10, 10);
+	context.fill();
+	context.fillStyle = 'red';
+	context.fillRect(10, player1_y, 10, 60);
+	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
 }
 
-const H: number = 100;
-const W: number = 15;
-const paddX: number = 100;
-let first: boolean = true;
-
-let socket: Socket;
 function Canvas() {
 	
-	// const sendMessage = () => {
-		// 	socket.emit("send_message", message);
-		// 	console.log('in send message', message);
-		// };
-		
-		// const [message, setMessage] = useState("");
-		const [messageReceived, setMessageReceived] = useState("");
-		
-		let canvas: HTMLCanvasElement;
-		let ctx: any;
-		let canvasRef = useRef<HTMLCanvasElement>(null);
-		let padd:Paddle;
-		
-		const draw = (y: number) => {
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			ctx.fillStyle = 'blue';
-			ctx.fillRect(paddX, y, W, H);
-		}
-		
+	const [player_status, setPlayer_status] = useState("default");
+	const canvasRef = useRef(null);
 	useEffect(() => {
-		if(!first)
-			return;
-		socket = io('http://localhost:3001/')
-		if(canvasRef.current) {
-			canvas = canvasRef.current;
-			ctx = canvas.getContext('2d');
-		};
-
-		padd = { x: canvas.width / 2, y: canvas.height / 2, width: 15, height: 100, dy: 0, speed: 6};
-
-		socket.on("receive_message", (data) => {
-			setMessageReceived(data.message);
-			// console.log('in receive message', data.message);
-			draw(data.message);
-		});
+		const canvas: any = canvasRef.current;
+		const context = canvas.getContext('2d');
+		draw_players(context, 10, 10, 350, 250);
 
 		window.addEventListener('keydown', (e) => {
-			if (e.code === "ArrowUp") {
-			//   padd.dy = -padd.speed;
-			  socket.emit("send_message", "move_up");
-			  console.log("up");
+			if (e.key === up_key && last_send !== 'u') {
+				ws.emit('setPosition', 'u');
+				last_send = 'u';
 			}
-			else if (e.code === "ArrowDown") {
-			//   padd.dy = padd.speed;
-			  socket.emit("send_message", "move_down");
-			  console.log("down");
+			if (e.key === down_key && last_send !== 'd') {
+				ws.emit('setPosition', 'd');
+				last_send = 'd';
 			}
-		});
+		})
 
 		window.addEventListener('keyup', (e) => {
-			if (e.code === "ArrowDown" || e.code === "ArrowUp") {
-			//   padd.dy = 0;
-			  socket.emit("send_message", "stop");
-			  console.log("stop");
+			if (last_send !== 'o') {
+				ws.emit('setPosition', 'o');
+				last_send = 'o';
 			}
+		})
+
+		ws.on('getPosition', (message: string) => {
+			let data = message.split(" ");
+			draw_players(context, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
 		});
 
+		ws.on('players', (message:string) => {
+			console.log("players", message);
+			setPlayer_status(message);
+		})
+
 		return () => {
-			socket.close();
+			ws.close();
 		}
 
 	}, []);
 
-	return (<canvas ref = {canvasRef} width = "1000" height = "600" />);
-};
+	return (
+		<>
+		<h1>{player_status}</h1>
+		<div className="Canvas">
+			<canvas ref={canvasRef} width="700" height="500">
+				Désolé, votre navigateur ne prend pas en charge &lt;canvas&gt;.
+			</canvas>
+		</div>
+		</>
+	);
+}
 
 export default Canvas;

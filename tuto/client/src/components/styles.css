@@ -1,3 +1,9 @@
+canvas {
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	background-color: #2C3E50;
+	border-radius: 10px;
+}
+
 .button {
 	position: relative;
 	width:30%;
