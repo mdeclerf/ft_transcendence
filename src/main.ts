@@ -11,6 +11,10 @@ async function bootstrap() {
   const PORT = process.env.PORT || 3001;
   const sessionRepo = app.get(getRepositoryToken(Session));
   app.setGlobalPrefix('api');
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  });
   app.use(
     session({
       cookie: {
@@ -19,7 +23,7 @@ async function bootstrap() {
       secret: process.env.COOKIE_SECRET,
       resave: false,
       saveUninitialized: false,
-      store: new TypeormStore({ cleanupLimit: 2 }).connect(sessionRepo),
+      store: new TypeormStore().connect(sessionRepo),
     }),
   );
   app.use(passport.initialize());

@@ -1,5 +1,5 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthenticatedGuard, IntraAuthGuard } from '../guards/intra-oauth.guard';
 
 @Controller('auth')
@@ -13,8 +13,8 @@ export class AuthController {
 
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
-	redirect() {
-		return 'ok';
+	redirect(@Res() res: Response) {
+		res.redirect('http://localhost:3000/game');
 	}
 
 	@Get('status')

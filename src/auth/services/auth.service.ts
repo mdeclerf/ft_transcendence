@@ -16,12 +16,14 @@ export class AuthService implements AuthenticationProvider {
 				intraId: intraId,
 			}
 		});
-		if (user) return user;
+		if (user) {
+			await this.userRepo.update({ intraId }, details);
+			return user;
+		}
 		return this.createUser(details);
 	}
 
 	createUser(details: UserDetails) {
-		// console.log('Creating user');
 		const user = this.userRepo.create(details);
 		return this.userRepo.save(user);
 	}
