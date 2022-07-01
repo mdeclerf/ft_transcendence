@@ -18,19 +18,25 @@ const draw_players = (context:any, player1_y: number, player2_y: number, ball_x:
 	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
 }
 
-const draw_board = (player1_score: number, player2_score:number) : string => {
-	if (player_status === 'first player')
-		return `${player1_score} vs ${player2_score }`
-	else if (player_status === 'second player')
-		return `${player2_score} vs ${player1_score}`
+const draw_board = (player1_score: number, player2_score:number) : string[] => {
+	let ret: Array<string> = ["", ""];
+	if (player_status === 'second_player')
+	{
+		ret[0] = player2_score.toString();
+		ret[1] = player1_score.toString();
+	}
 	else
-		return `player 1: ${player1_score} vs player 2: ${player2_score}`
+	{
+		ret[0] = player1_score.toString();
+		ret[1] = player2_score.toString();
+	}
+	return ret;
 }
 
 function Canvas() {
 
-	const [winning_score, setWinning_score] = useState(0);
-	const [score_board, setScore_board] = useState("");
+	const [winning_score, setWinning_score] = useState<number>(0);
+	const [score_board, setScore_board] = useState<string[]>([]);
 
 	const canvasRef = useRef(null);
 	useEffect(() => {
@@ -78,9 +84,21 @@ function Canvas() {
 	return (
 		<>
 		<div>
-		<p>Player status : {player_status}</p>
-		<p>Winning score : {winning_score}</p>
-		<p>{score_board}</p>
+		<table>
+			<tr>
+				<th className="name">Player status</th>
+				<th className="element" colSpan={2}>{player_status}</th>
+			</tr>
+			<tr>
+				<th className="name">Winning score</th>
+				<th className="element" colSpan={2}>{winning_score}</th>
+			</tr>
+			<tr>
+				<th className="name">Scores</th>
+				<th className="element">{score_board[0]}</th>
+				<th className="element">{score_board[1]}</th>
+			</tr>
+		</table>
 		</div>
 		<div className="Canvas">
 			<canvas ref={canvasRef} width="700" height="500">
@@ -91,3 +109,7 @@ function Canvas() {
 }
 
 export default Canvas;
+
+{/* <p className="score-board">Player status : {player_status}</p>
+<p className="score-board">Winning score : {winning_score}</p>
+<p>Score : {score_board}</p> */}
