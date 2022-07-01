@@ -1,42 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Gugi&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gugi&family=Roboto:wght@300&display=swap');
+
 canvas {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	background-color: #2C3E50;
+	background-color: #8306B7;
 	border-radius: 10px;
-}
-
-.button {
-	position: relative;
-	width:30%;
-	margin: 60px;
-	border-radius: 50px;
-	padding: 20px 30px;
-	font-size: 25px;
-	border: none;
-	font-family: "arial";
-	background-color: blue;
-	color: white;
 }
 
 .name {
 	padding: 15px;
-	border-radius: 5px;
 	margin-left: auto;
     margin-right: auto;
 	font-size: 25px;
 	border: none;
-	font-family: "arial";
-	background-color: blue;
+	font-family: "Gugi";
+	background-color: #F7B008;
 	color: white;
 }
 
 .element {
 	padding: 15px;
-	border-radius: 5px;
 	margin-left: auto;
     margin-right: auto;
 	font-size: 25px;
 	border: none;
-	font-family: "arial";
-	background-color: red;
+	font-family: "Roboto";
+	background-color: #08F7B0;
+	color: white;
+}
+
+.title {
+	padding: 15px;
+	margin-left: auto;
+    margin-right: auto;
+	font-size: 25px;
+	border: none;
+	font-family: "Gugi";
+	background-color: #08F7B0;
+	color: white;
+}
+
+.button {
+	padding: 15px;
+	margin-left: auto;
+    margin-right: auto;
+	font-size: 25px;
+	border-radius: 15px;
+	border: none;
+	font-family: "Gugi";
+	background-color: #08F7B0;
 	color: white;
 }

@@ -10,10 +10,10 @@ let player_status: string;
 
 const draw_players = (context:any, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
 	context.clearRect(-100, -100, context.canvas.width + 100, context.canvas.height + 100);
-	context.fillStyle = 'blue';
+	context.fillStyle = '#F7B008';
 	context.fillRect(ball_x -5, ball_y - 5, 10, 10);
 	context.fill();
-	context.fillStyle = 'red';
+	context.fillStyle = '#08F7B0';
 	context.fillRect(10, player1_y, 10, 60);
 	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
 }
@@ -83,6 +83,7 @@ function Canvas() {
 
 	return (
 		<>
+
 		<div>
 		<table>
 			<tr>
@@ -99,11 +100,13 @@ function Canvas() {
 				<th className="element">{score_board[1]}</th>
 			</tr>
 		</table>
+		<br></br>
 		</div>
 		<div className="Canvas">
 			<canvas ref={canvasRef} width="700" height="500">
 			</canvas>
 		</div>
+		<h1 className='button'>Play again</h1>
 		</>
 	);
 }

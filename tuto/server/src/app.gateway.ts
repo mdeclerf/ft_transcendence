@@ -170,13 +170,13 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 		client.emit("winning_score", this.game.winning_score.toString());
 
 		if (this.game.first_player == null) {
-			client.emit("players", "first player");
+			client.emit("players", "First player");
 		}
 		else if (this.game.first_player && this.game.second_player == null) {
-			client.emit("players", "second player");
+			client.emit("players", "Second player");
 		}
 		else 
-			client.emit("players", "watching");
+			client.emit("players", "Watching");
 		this.game.add_player(new Player(client.id, client));
 	}
 
