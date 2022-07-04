@@ -22,10 +22,10 @@ class Player {
 	score: number;
 	socket: Socket;
 
-	constructor(it: string, socket: Socket) {
+	constructor(id: string, socket: Socket) {
 		this.y_pos = 0;
 		this.delta = 0;
-		this.id = it;
+		this.id = id;
 		this.score = 0;
 		this.socket = socket;
 	}
@@ -113,7 +113,7 @@ class Game {
 		if (this.first_player == null) {
 			this.first_player = p;
 		} else if (this.second_player == null) {
-			this.first_player.socket.emit("players", "first player");
+			this.first_player.socket.emit("players", "First player");
 			this.second_player = p;
 			this.is_running = true;
 			this.ball_x = 350;
@@ -166,7 +166,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 	afterInit(server: any) {}
 
 	handleConnection(client: Socket, ...args: any[]) {
-
 		client.emit("winning_score", this.game.winning_score.toString());
 
 		if (this.game.first_player == null) {
@@ -194,6 +193,17 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 			this.game.set_delta(-1, client.id);
 		} else if (message == 'o') {
 			this.game.set_delta(0, client.id);
+		}
+	}
+
+	@SubscribeMessage('play_again')
+	handleReplay(client: Socket, message: string): void {
+		if (!JSON.stringify(message).includes("Watching")) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+		{
+			this.game.is_running = true;
+			this.game.first_player.score = 0;
+			this.game.second_player.score = 0;
+			this.game.run_game();
 		}
 	}
 }

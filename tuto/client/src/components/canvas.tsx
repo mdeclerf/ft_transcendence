@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState} from 'react';
-import './styles.css';
+import '../styles.css';
 import { io } from "socket.io-client";
 
 const ws = io("http://localhost:3001");
-const up_key: string = "ArrowUp";
-const down_key: string = "ArrowDown";
-let last_send: string = "ArrowDown";
+// const ws = io("http://10.2.6.5:3001");
+const up_key: string = "w";
+const down_key: string = "s";
+let last_send: string = "s";
 let player_status: string;
+const CANVAS_WIDTH = 700;
+const CANVAS_HEIGHT = 500;
 
 const draw_players = (context:any, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
 	context.clearRect(-100, -100, context.canvas.width + 100, context.canvas.height + 100);
@@ -20,7 +23,7 @@ const draw_players = (context:any, player1_y: number, player2_y: number, ball_x:
 
 const draw_board = (player1_score: number, player2_score:number) : string[] => {
 	let ret: Array<string> = ["", ""];
-	if (player_status === 'second_player')
+	if (player_status === 'Second Player')
 	{
 		ret[0] = player2_score.toString();
 		ret[1] = player1_score.toString();
@@ -39,24 +42,34 @@ function Canvas() {
 	const [score_board, setScore_board] = useState<string[]>([]);
 
 	const canvasRef = useRef(null);
+
+	const handlePlayClick = () => {
+		ws.emit('play_again', {player_status});
+	};
+
 	useEffect(() => {
 		const canvas: any = canvasRef.current;
+		canvas.width = CANVAS_WIDTH;
+		canvas.height = CANVAS_HEIGHT;
 		const context = canvas.getContext('2d');
 		draw_players(context, 10, 10, 350, 250);
-
+		
 		window.addEventListener('keydown', (e) => {
 			if (e.key === up_key && last_send !== 'u') {
+				e.preventDefault();
 				ws.emit('setPosition', 'u');
 				last_send = 'u';
 			}
 			if (e.key === down_key && last_send !== 'd') {
+				e.preventDefault();
 				ws.emit('setPosition', 'd');
 				last_send = 'd';
 			}
 		})
-
+		
 		window.addEventListener('keyup', (e) => {
 			if (last_send !== 'o') {
+				e.preventDefault();
 				ws.emit('setPosition', 'o');
 				last_send = 'o';
 			}
@@ -65,9 +78,10 @@ function Canvas() {
 		ws.on('winning_score', (message:string) => {
 			setWinning_score(parseInt(message));
 		});
-		
+
 		ws.on('players', (message:string) => {
 			player_status = message;
+			console.log(player_status);
 		});
 
 		ws.on('getPosition', (message: string) => {
@@ -83,7 +97,6 @@ function Canvas() {
 
 	return (
 		<>
-
 		<div>
 		<table>
 			<tr>
@@ -103,16 +116,13 @@ function Canvas() {
 		<br></br>
 		</div>
 		<div className="Canvas">
-			<canvas ref={canvasRef} width="700" height="500">
+			<canvas ref={canvasRef}>
 			</canvas>
 		</div>
-		<h1 className='button'>Play again</h1>
+		<br></br>
+		<button className='button' type='button' onClick={handlePlayClick}>Play again !</button>
 		</>
 	);
 }
 
 export default Canvas;
-
-{/* <p className="score-board">Player status : {player_status}</p>
-<p className="score-board">Winning score : {winning_score}</p>
-<p>Score : {score_board}</p> */}
