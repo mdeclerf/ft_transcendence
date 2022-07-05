@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../typeorm';
 import { UserDetails } from '../../utils/types';
-import { AuthenticationProvider } from './auth';
+import { IAuthService } from './auth';
 
 @Injectable()
-export class AuthService implements AuthenticationProvider {
+export class AuthService implements IAuthService {
 	constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
 	async validateUser(details: UserDetails) {
