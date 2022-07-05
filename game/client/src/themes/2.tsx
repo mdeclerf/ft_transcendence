@@ -1,30 +1,30 @@
-
-// https://dragoshmocrii.com/material-ui-custom-theme-and-typescript/
 import { createTheme } from '@material-ui/core/styles';
 
-const theme_1 = {
+const theme_2 = {
     palette: {
         primary: {
-            main: '#6527FF',
+            main: '#B7E453',
         },
         secondary: {
-            main: '#27FFD1',
+            main: '#E4536F',
         },
         error: {
-            main: '#fff',
+            main: '#8053E4',
         },
         background: {
-            default: '#DBFF81',
+            default: '#FFF',
         },
     },
     sidebarWidth: 240
 } as const;
 
 type CustomTheme = {
-	[Key in keyof typeof theme_1]: typeof theme_1[Key]
+    [Key in keyof typeof theme_2]: typeof theme_2[Key]
 }
+
 declare module '@material-ui/core/styles/createTheme' {
     interface Theme extends CustomTheme { }
     interface ThemeOptions extends CustomTheme { }
 }
-export default createTheme(theme_1);
+
+export default createTheme(theme_2);

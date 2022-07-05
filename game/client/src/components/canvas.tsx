@@ -5,7 +5,7 @@ import { Table } from '@mui/material';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Stack from '@mui/material/Stack';
-// import { useTheme } from '@material-ui/core/styles';
+import { Typography } from "@material-ui/core";
 import useTheme from '@mui/material/styles/useTheme';
 
 const ws = io("http://localhost:3001");
