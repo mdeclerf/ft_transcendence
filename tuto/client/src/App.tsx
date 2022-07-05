@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import './styles.css';
-import { themes } from "./theme";
+import React from 'react';
+import  theme_2  from './themes/2';
+import  theme_1  from './themes/1';
 import Canvas from './components/canvas';
+import { ThemeProvider } from '@mui/material/styles';
+import { Grid } from '@material-ui/core';
+import Button from "@mui/material/Button";
+import { CssBaseline } from "@mui/material";
 
 function App() {
 
-	type ThemeName = keyof typeof themes;
-	const [themeName, setThemeName] = useState<ThemeName>('main');
-	useEffect(() => {
-		let name: ThemeName = 'dark';
-		setThemeName(name);
-	}, []);
+	const [colors, setColors] = React.useState(true);
 
 	return (
-
-	// <ThemeProvider value={themeName}>
-		<div className="App">
+		<ThemeProvider theme={colors ? theme_1 : theme_2}>
+		<CssBaseline/>
+		<Button variant="contained" onClick={() => setColors((prev) => !prev)}>Toggle Theme</Button>
+		<Grid container justifyContent='center'>
 		<Canvas/>
-		</div>
-	{/* </ThemeProvider> */}
-  );
+		</Grid>
+		</ThemeProvider>
+	);
 }
 
 export default App;

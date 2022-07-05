@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState} from 'react';
-import '../styles.css';
 import { io } from "socket.io-client";
+import Button from '@mui/material/Button';
+import { Table } from '@mui/material';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Stack from '@mui/material/Stack';
+// import { useTheme } from '@material-ui/core/styles';
+import useTheme from '@mui/material/styles/useTheme';
 
 const ws = io("http://localhost:3001");
 // const ws = io("http://10.2.6.5:3001");
@@ -11,12 +17,12 @@ let player_status: string;
 const CANVAS_WIDTH = 700;
 const CANVAS_HEIGHT = 500;
 
-const draw_players = (context:any, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
+const draw_players = (context:any, primary: string, secondary: string, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
 	context.clearRect(-100, -100, context.canvas.width + 100, context.canvas.height + 100);
-	context.fillStyle = '#F7B008';
+	context.fillStyle = primary;
 	context.fillRect(ball_x -5, ball_y - 5, 10, 10);
 	context.fill();
-	context.fillStyle = '#08F7B0';
+	context.fillStyle = secondary;
 	context.fillRect(10, player1_y, 10, 60);
 	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
 }
@@ -38,6 +44,15 @@ const draw_board = (player1_score: number, player2_score:number) : string[] => {
 
 function Canvas() {
 
+	const theme = useTheme();
+	console.log(theme);
+	let primary: string = theme.palette.primary.main;
+	let secondary: string = theme.palette.secondary.main;
+	let background: string = theme.palette.error.main;
+	console.log('primary', primary);
+	console.log('secondary', secondary);
+	console.log('back', background);
+
 	const [winning_score, setWinning_score] = useState<number>(0);
 	const [score_board, setScore_board] = useState<string[]>([]);
 
@@ -49,11 +64,12 @@ function Canvas() {
 
 	useEffect(() => {
 		const canvas: any = canvasRef.current;
+		canvas.style.backgroundColor = background;
 		canvas.width = CANVAS_WIDTH;
 		canvas.height = CANVAS_HEIGHT;
 		const context = canvas.getContext('2d');
-		draw_players(context, 10, 10, 350, 250);
-		
+		draw_players(context, primary, secondary, 10, 10, 350, 250);
+
 		window.addEventListener('keydown', (e) => {
 			if (e.key === up_key && last_send !== 'u') {
 				e.preventDefault();
@@ -66,7 +82,7 @@ function Canvas() {
 				last_send = 'd';
 			}
 		})
-		
+
 		window.addEventListener('keyup', (e) => {
 			if (last_send !== 'o') {
 				e.preventDefault();
@@ -86,41 +102,39 @@ function Canvas() {
 
 		ws.on('getPosition', (message: string) => {
 			let data = message.split(" ");
-			draw_players(context, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
+			draw_players(context, primary, secondary, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
 			setScore_board(draw_board(parseInt(data[4]), parseInt(data[5])));
 		});
 
 		return () => {
 			ws.close();
 		}
-	}, []);
+	}, [background, primary, secondary]);
 
 	return (
 		<>
-		<div>
-		<table>
-			<tr>
-				<th className="name">Player status</th>
-				<th className="element" colSpan={2}>{player_status}</th>
-			</tr>
-			<tr>
-				<th className="name">Winning score</th>
-				<th className="element" colSpan={2}>{winning_score}</th>
-			</tr>
-			<tr>
-				<th className="name">Scores</th>
-				<th className="element">{score_board[0]}</th>
-				<th className="element">{score_board[1]}</th>
-			</tr>
-		</table>
-		<br></br>
-		</div>
-		<div className="Canvas">
-			<canvas ref={canvasRef}>
-			</canvas>
-		</div>
-		<br></br>
-		<button className='button' type='button' onClick={handlePlayClick}>Play again !</button>
+		<Stack spacing={2}>
+
+		<Table>
+			<TableRow>
+				<TableCell>Player status</TableCell>
+				<TableCell colSpan={2}>{player_status}</TableCell>
+			</TableRow>
+			<TableRow>
+				<TableCell>Winning score</TableCell>
+				<TableCell colSpan={2}>{winning_score}</TableCell>
+			</TableRow>
+			<TableRow>
+				<TableCell>Scores</TableCell>
+				<TableCell>{score_board[0]}</TableCell>
+				<TableCell>{score_board[1]}</TableCell>
+			</TableRow>
+		</Table>
+
+		<canvas ref={canvasRef}></canvas>
+
+		<Button variant="contained" onClick={handlePlayClick}>Play again !</Button>
+		</Stack>
 		</>
 	);
 }
