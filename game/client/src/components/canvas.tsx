@@ -5,8 +5,7 @@ import { Table } from '@mui/material';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Stack from '@mui/material/Stack';
-import { Typography } from "@material-ui/core";
-import useTheme from '@mui/material/styles/useTheme';
+// import useTheme from '@mui/material/styles/useTheme';
 
 const ws = io("http://localhost:3001");
 // const ws = io("http://10.2.6.5:3001");
@@ -16,16 +15,6 @@ let last_send: string = "s";
 let player_status: string;
 const CANVAS_WIDTH = 700;
 const CANVAS_HEIGHT = 500;
-
-const draw_players = (context:any, primary: string, secondary: string, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
-	context.clearRect(-100, -100, context.canvas.width + 100, context.canvas.height + 100);
-	context.fillStyle = primary;
-	context.fillRect(ball_x -5, ball_y - 5, 10, 10);
-	context.fill();
-	context.fillStyle = secondary;
-	context.fillRect(10, player1_y, 10, 60);
-	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
-}
 
 const draw_board = (player1_score: number, player2_score:number) : string[] => {
 	let ret: Array<string> = ["", ""];
@@ -42,33 +31,40 @@ const draw_board = (player1_score: number, player2_score:number) : string[] => {
 	return ret;
 }
 
+const draw_players = (context:any, ball_color: string, paddle_color: string, player1_y: number, player2_y: number, ball_x: number, ball_y: number) => {
+	context.clearRect(-100, -100, context.canvas.width + 100, context.canvas.height + 100);
+	context.fillStyle = ball_color;
+	context.fillRect(ball_x -5, ball_y - 5, 10, 10);
+	context.fill();
+	context.fillStyle = paddle_color;
+	context.fillRect(10, player1_y, 10, 60);
+	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
+}
+
+
 function Canvas() {
 
-	const theme = useTheme();
-	console.log(theme);
-	let primary: string = theme.palette.primary.main;
-	let secondary: string = theme.palette.secondary.main;
-	let background: string = theme.palette.error.main;
-	console.log('primary', primary);
-	console.log('secondary', secondary);
-	console.log('back', background);
+	// const theme = useTheme();
+	let ball_color: string = '#000';
+	let paddle_color: string = '#000';
 
 	const [winning_score, setWinning_score] = useState<number>(0);
 	const [score_board, setScore_board] = useState<string[]>([]);
-
+	
 	const canvasRef = useRef(null);
-
+	
 	const handlePlayClick = () => {
 		ws.emit('play_again', {player_status});
 	};
-
+	
 	useEffect(() => {
 		const canvas: any = canvasRef.current;
-		canvas.style.backgroundColor = background;
+		canvas.style.backgroundColor = 'white';
+		canvas.style.borderRadius = '10px';
 		canvas.width = CANVAS_WIDTH;
 		canvas.height = CANVAS_HEIGHT;
 		const context = canvas.getContext('2d');
-		draw_players(context, primary, secondary, 10, 10, 350, 250);
+		draw_players(context, ball_color, paddle_color, 10, 10, 350, 250);
 
 		window.addEventListener('keydown', (e) => {
 			if (e.key === up_key && last_send !== 'u') {
@@ -102,41 +98,42 @@ function Canvas() {
 
 		ws.on('getPosition', (message: string) => {
 			let data = message.split(" ");
-			draw_players(context, primary, secondary, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
+			draw_players(context, ball_color, paddle_color, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
 			setScore_board(draw_board(parseInt(data[4]), parseInt(data[5])));
 		});
 
 		return () => {
 			ws.close();
 		}
-	}, [background, primary, secondary]);
+		// eslint-disable-next-line
+	}, []);
 
-	return (
-		<>
-		<Stack spacing={2}>
-
-		<Table>
-			<TableRow>
-				<TableCell>Player status</TableCell>
-				<TableCell colSpan={2}>{player_status}</TableCell>
-			</TableRow>
-			<TableRow>
-				<TableCell>Winning score</TableCell>
-				<TableCell colSpan={2}>{winning_score}</TableCell>
-			</TableRow>
-			<TableRow>
-				<TableCell>Scores</TableCell>
-				<TableCell>{score_board[0]}</TableCell>
-				<TableCell>{score_board[1]}</TableCell>
-			</TableRow>
-		</Table>
-
-		<canvas ref={canvasRef}></canvas>
-
-		<Button variant="contained" onClick={handlePlayClick}>Play again !</Button>
-		</Stack>
-		</>
-	);
+		return (
+			<>
+			<Stack spacing={2}>
+	
+			<Table>
+				<TableRow>
+					<TableCell>Player status</TableCell>
+					<TableCell colSpan={2}>{player_status}</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell>Winning score</TableCell>
+					<TableCell colSpan={2}>{winning_score}</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell>Scores</TableCell>
+					<TableCell>{score_board[0]}</TableCell>
+					<TableCell>{score_board[1]}</TableCell>
+				</TableRow>
+			</Table>
+	
+			<canvas ref={canvasRef}></canvas>
+			{(player_status!== "Watching") &&
+				<Button variant="contained" onClick={handlePlayClick}>Play again !</Button> }
+			</Stack>
+			</>
+		);
 }
 
 export default Canvas;

@@ -198,7 +198,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
 	@SubscribeMessage('play_again')
 	handleReplay(client: Socket, message: string): void {
-		if (!JSON.stringify(message).includes("Watching")) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+		if (!JSON.stringify(message).includes("Watching") && !this.game.is_running) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 		{
 			this.game.is_running = true;
 			this.game.first_player.score = 0;
@@ -207,4 +207,3 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 		}
 	}
 }
-

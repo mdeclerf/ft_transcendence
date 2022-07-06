@@ -12,7 +12,7 @@ const theme_2 = {
             main: '#8053E4',
         },
         background: {
-            default: '#FFF',
+            default: '#ddd',
         },
     },
     sidebarWidth: 240
