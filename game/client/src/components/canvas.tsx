@@ -39,8 +39,12 @@ const draw_players = (context:any, ball_color: string, paddle_color: string, pla
 	context.fillStyle = paddle_color;
 	context.fillRect(10, player1_y, 10, 60);
 	context.fillRect(context.canvas.width - 20, player2_y, 10, 60);
+	let net = 8;
+	for (let i = net; i < CANVAS_HEIGHT; i += net * 2) {
+		context.fillStyle = ball_color;
+		context.fillRect(CANVAS_WIDTH / 2 - (net / 2), i, net, net);
+	};
 }
-
 
 function Canvas() {
 
@@ -129,7 +133,7 @@ function Canvas() {
 			</Table>
 	
 			<canvas ref={canvasRef}></canvas>
-			{(player_status!== "Watching") &&
+			{(player_status!== "Watching" && (parseInt(score_board[0]) >= winning_score || parseInt(score_board[1]) >= winning_score)) &&
 				<Button variant="contained" onClick={handlePlayClick}>Play again !</Button> }
 			</Stack>
 			</>
