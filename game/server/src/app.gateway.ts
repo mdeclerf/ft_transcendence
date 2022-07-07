@@ -1,6 +1,21 @@
-import { Logger } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer } from '@nestjs/websockets';
+import {
+	SubscribeMessage,
+	WebSocketGateway,
+	OnGatewayInit,
+	WebSocketServer,
+	OnGatewayConnection,
+	OnGatewayDisconnect,
+} from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { Logger } from '@nestjs/common';
+import { Game } from './game.entity';
+import { AppService } from './app.service';
+import { GameDetailsDto } from './types';
+
+let details: GameDetailsDto = new GameDetailsDto;
+details.login = "default";
+details.has_won = false;
+details.score = -1;
 
 const sleep = (milliseconds: number) => {
 	return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -31,7 +46,7 @@ class Player {
 	}
 }
 
-class Game {
+class Pong {
 	private logger: Logger = new Logger('AppGateway');
 
 	is_running: boolean;
@@ -163,9 +178,10 @@ class Game {
 @WebSocketGateway({ cors: true })
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
+	constructor(private appService: AppService) {}
 	@WebSocketServer() wss: Server;
 
-	game: Game = new Game();
+	game: Pong = new Pong();
 
 	afterInit(server: any) {}
 
@@ -183,7 +199,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 		this.game.add_player(new Player(client.id, client));
 	}
 
-	handleDisconnect(client: Socket) {
+	handleDisconnect(client: Socket){
 		this.game.remove_player(client.id);
 	}
 
@@ -201,7 +217,18 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('play_again')
-	handleReplay(client: Socket, message: string): void {
+	async handleReplay(client: Socket, message: string): Promise<void> {
+	
+		////
+		details.login = client.id;
+		details.opponent_login = "blabla";
+		details.score = 3;
+		details.opponent_score = 1;
+		details.has_won = true;
+		////
+
+		await this.appService.createUser(details);
+
 		if (!JSON.stringify(message).includes("Watching") && !this.game.is_running) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 		{
 			this.game.is_running = true;

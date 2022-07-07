@@ -14,7 +14,7 @@ const theme_1 = {
             main: '#12ED83',
         },
         background: {
-            default: '#6e7480',
+            default: '#C9D4CA',
         },
     },
 
