@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
 import * as passport from 'passport';
-import { TypeormStore } from '@freshgiammi/connect-typeorm/out';
+import { TypeormStore } from 'connect-typeorm/out';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Session } from './typeorm';
 

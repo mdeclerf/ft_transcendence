@@ -26,8 +26,11 @@ export class AuthController {
 	@Get('logout')
 	@UseGuards(AuthenticatedGuard)
 	logout(@Req() req: Request) {
-		req.logout((err) => {
-			if (err) { return err; }
+		req.logOut((err) => {
+			if (err) throw err;
 		});
+		// req.session.destroy((err) => {
+		// 	if (err) throw err;
+		// })
 	}
 }

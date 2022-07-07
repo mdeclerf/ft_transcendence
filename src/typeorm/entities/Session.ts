@@ -1,4 +1,4 @@
-import { ISession } from "@freshgiammi/connect-typeorm/out";
+import { ISession } from "connect-typeorm/out";
 import { Column, DeleteDateColumn, Entity, Index, PrimaryColumn } from "typeorm";
 
 @Entity()

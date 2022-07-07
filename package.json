@@ -21,13 +21,13 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@freshgiammi/connect-typeorm": "^2.0.0",
     "@nestjs/common": "^8.4.7",
     "@nestjs/config": "^2.1.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/passport": "^8.2.2",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.1.4",
+    "connect-typeorm": "^2.0.0",
     "express-session": "^1.17.3",
     "passport": "^0.6.0",
     "passport-42": "^1.2.6",
