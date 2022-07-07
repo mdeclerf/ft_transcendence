@@ -100,11 +100,6 @@ function Canvas() {
 			let data = message.split(" ");
 			draw_players(context, ball_color, paddle_color, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
 			setScore_board(draw_board(parseInt(data[4]), parseInt(data[5])));
-
-			console.log(`player_1 score ${parseInt(data[0])}`);
-			console.log(`player_2 score ${parseInt(data[1])}`);
-			console.log(`player_status = ${player_status}`);
-			console.log(`winning_score = ${winning_score}`);
 		});
 
 		return () => {

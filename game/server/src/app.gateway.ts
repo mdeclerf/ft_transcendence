@@ -189,11 +189,12 @@ class Pong {
 				details.has_won = false;
 		}
 
-		console.log(`details.login ${details.login}`);
-		console.log(`details.opponent_login ${details.opponent_login}`);
-		console.log(`details.score ${details.score}`);
-		console.log(`details.opponent_score ${details.opponent_score}`);
-		console.log(`details.has_won ${details.has_won}`);
+		this.logger.log(`details.login ${details.login}`);
+		this.logger.log(`details.opponent_login ${details.opponent_login}`);
+		this.logger.log(`details.score ${details.score}`);
+		this.logger.log(`details.opponent_score ${details.opponent_score}`);
+		this.logger.log(`details.has_won ${details.has_won}`);
+		this.logger.log(`--------------------------------`);
 	}
 
 	async database_create(id: string): Promise<void> {
