@@ -1,4 +1,13 @@
-export class GameDetailsDto{
+export class GameDetails{
+
+	constructor() {
+		this.login = "";
+		this.opponent_login = "";
+		this.score = 0;
+		this.opponent_score = 0;
+		this.has_won = false;
+	}
+
 	public login: string;
 	public opponent_login: string;
 	public score: number;

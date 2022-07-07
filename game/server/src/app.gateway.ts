@@ -8,14 +8,10 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { Game } from './game.entity';
 import { AppService } from './app.service';
-import { GameDetailsDto } from './types';
+import { GameDetails } from './types';
 
-let details: GameDetailsDto = new GameDetailsDto;
-details.login = "default";
-details.has_won = false;
-details.score = -1;
+let details: GameDetails = new GameDetails;
 
 const sleep = (milliseconds: number) => {
 	return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -48,7 +44,6 @@ class Player {
 
 class Pong {
 	private logger: Logger = new Logger('AppGateway');
-
 	is_running: boolean;
 	first_player: Player = null;
 	second_player: Player = null;
@@ -56,7 +51,9 @@ class Pong {
 	ball_y: number = 250;
 	ball_angle: number = random_ball();
 	spectator: any = [];
-	winning_score: number = 3;
+	winning_score: number = 2;
+
+	constructor(private appService: AppService) {}
 
 	game_state() {
 		this.logger.log(`Player1: ${this.first_player.id}`);
@@ -121,12 +118,12 @@ class Pong {
 				this.is_running = false;
 				this.first_player.socket.emit("getPosition", `${this.first_player.y_pos} ${this.second_player.y_pos} ${this.ball_x} ${this.ball_y} ${this.first_player.score} ${this.second_player.score}`);
 				this.second_player.socket.emit("getPosition", `${this.second_player.y_pos} ${this.first_player.y_pos} ${700 - this.ball_x} ${this.ball_y} ${this.first_player.score} ${this.second_player.score} `);
+				this.database_create(this.first_player.id);
+				this.database_create(this.second_player.id);
 			}
 			await sleep(50);
 		}
 	}
-
-	constructor() {}
 
 	add_player(p: Player) {
 		if (this.first_player == null) {
@@ -166,6 +163,44 @@ class Pong {
 		this.logger.log(this.spectator.length)
 	}
 
+	set_details(id: string)
+	{
+		if (this.first_player && this.first_player.id == id)
+		{
+			details.login = this.first_player.id;
+			details.opponent_login = this.second_player.id;
+			details.score = this.first_player.score;
+			details.opponent_score = this.second_player.score;
+			if (this.first_player.score >= this.winning_score)
+				details.has_won = true;
+			else if (this.second_player.score >= this.winning_score)
+				details.has_won = false;
+		}
+
+		else if (this.second_player && this.second_player.id == id)
+		{
+			details.login = this.second_player.id;
+			details.opponent_login = this.first_player.id;
+			details.score = this.second_player.score;
+			details.opponent_score = this.first_player.score;
+			if (this.second_player.score >= this.winning_score)
+				details.has_won = true;
+			else if (this.first_player.score >= this.winning_score)
+				details.has_won = false;
+		}
+
+		console.log(`details.login ${details.login}`);
+		console.log(`details.opponent_login ${details.opponent_login}`);
+		console.log(`details.score ${details.score}`);
+		console.log(`details.opponent_score ${details.opponent_score}`);
+		console.log(`details.has_won ${details.has_won}`);
+	}
+
+	async database_create(id: string): Promise<void> {
+		this.set_details(id);
+		await this.appService.createUser(details);
+	}
+
 	set_delta(delta: number, id: string) {
 		if (this.first_player && this.first_player.id == id) {
 			this.first_player.delta = delta;
@@ -181,9 +216,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 	constructor(private appService: AppService) {}
 	@WebSocketServer() wss: Server;
 
-	game: Pong = new Pong();
+	game: Pong = new Pong(this.appService);
 
-	afterInit(server: any) {}
+	afterInit() {}
 
 	handleConnection(client: Socket, ...args: any[]) {
 		client.emit("winning_score", this.game.winning_score.toString());
@@ -217,18 +252,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('play_again')
-	async handleReplay(client: Socket, message: string): Promise<void> {
-	
-		////
-		details.login = client.id;
-		details.opponent_login = "blabla";
-		details.score = 3;
-		details.opponent_score = 1;
-		details.has_won = true;
-		////
-
-		await this.appService.createUser(details);
-
+	handleReplay(client: Socket, message: string) : void {
 		if (!JSON.stringify(message).includes("Watching") && !this.game.is_running) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 		{
 			this.game.is_running = true;

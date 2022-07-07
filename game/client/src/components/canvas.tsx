@@ -13,6 +13,7 @@ const up_key: string = "w";
 const down_key: string = "s";
 let last_send: string = "s";
 let player_status: string;
+let winning_score: number = 0;
 const CANVAS_WIDTH = 700;
 const CANVAS_HEIGHT = 500;
 
@@ -47,20 +48,16 @@ const draw_players = (context:any, ball_color: string, paddle_color: string, pla
 }
 
 function Canvas() {
-
-	// const theme = useTheme();
 	let ball_color: string = '#000';
 	let paddle_color: string = '#000';
 
-	const [winning_score, setWinning_score] = useState<number>(0);
 	const [score_board, setScore_board] = useState<string[]>([]);
-	
 	const canvasRef = useRef(null);
-	
+
 	const handlePlayClick = () => {
 		ws.emit('play_again', {player_status});
 	};
-	
+
 	useEffect(() => {
 		const canvas: any = canvasRef.current;
 		canvas.style.backgroundColor = 'white';
@@ -69,7 +66,7 @@ function Canvas() {
 		canvas.height = CANVAS_HEIGHT;
 		const context = canvas.getContext('2d');
 		draw_players(context, ball_color, paddle_color, 10, 10, 350, 250);
-
+		
 		window.addEventListener('keydown', (e) => {
 			if (e.key === up_key && last_send !== 'u') {
 				e.preventDefault();
@@ -81,29 +78,33 @@ function Canvas() {
 				ws.emit('setPosition', 'd');
 				last_send = 'd';
 			}
-		})
-
+		});
+		
 		window.addEventListener('keyup', (e) => {
 			if (last_send !== 'o') {
 				e.preventDefault();
 				ws.emit('setPosition', 'o');
 				last_send = 'o';
 			}
-		})
+		});
 
 		ws.on('winning_score', (message:string) => {
-			setWinning_score(parseInt(message));
+			winning_score = parseInt(message);
 		});
 
 		ws.on('players', (message:string) => {
 			player_status = message;
-			console.log(player_status);
 		});
 
 		ws.on('getPosition', (message: string) => {
 			let data = message.split(" ");
 			draw_players(context, ball_color, paddle_color, parseInt(data[0]), parseInt(data[1]), parseInt(data[2]), parseInt(data[3]));
 			setScore_board(draw_board(parseInt(data[4]), parseInt(data[5])));
+
+			console.log(`player_1 score ${parseInt(data[0])}`);
+			console.log(`player_2 score ${parseInt(data[1])}`);
+			console.log(`player_status = ${player_status}`);
+			console.log(`winning_score = ${winning_score}`);
 		});
 
 		return () => {

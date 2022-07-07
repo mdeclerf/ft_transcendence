@@ -13,8 +13,14 @@ export class Game {
     @Column({type: 'text'})
     login: string;
 
+	@Column({type: 'text'})
+    opponent_login: string;
+
 	@Column({type: 'integer'})
     score: number;
+
+	@Column({type: 'integer'})
+    opponent_score: number;
 
 	@Column({type: 'boolean'})
 	has_won: boolean;

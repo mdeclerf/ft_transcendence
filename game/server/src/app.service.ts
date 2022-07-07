@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
-import { GameDetailsDto } from './types';
+import { GameDetails } from './types';
 
 @Injectable()
 export class AppService {
@@ -17,7 +17,7 @@ export class AppService {
     return await this.gameRepository.find();
   }
 
-  async createUser(details: GameDetailsDto) : Promise<Game>{
+  async createUser(details: GameDetails) : Promise<Game>{
 	const user = this.gameRepository.create(details);
 	return await this.gameRepository.save(user);
 }
