@@ -5,7 +5,7 @@ import { Game } from './game.entity';
 import { GameDetails } from './types';
 
 @Injectable()
-export class AppService {
+export class GameService {
  constructor(
    @InjectRepository(Game) private gameRepository: Repository<Game>,
  ) {}

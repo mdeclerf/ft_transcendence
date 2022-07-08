@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { AppService } from './app.service';
+import { GameService } from './game.service';
 import { GameDetails } from './types';
 
 let details: GameDetails = new GameDetails;
@@ -43,7 +43,7 @@ class Player {
 }
 
 class Pong {
-	private logger: Logger = new Logger('AppGateway');
+	private logger: Logger = new Logger('GameGateway');
 	is_running: boolean;
 	first_player: Player = null;
 	second_player: Player = null;
@@ -51,9 +51,10 @@ class Pong {
 	ball_y: number = 250;
 	ball_angle: number = random_ball();
 	spectator: any = [];
-	winning_score: number = 2;
+	winning_score: number = 10;
+	ball_speed: number = 10;
 
-	constructor(private appService: AppService) {}
+	constructor(private gameService: GameService) {}
 
 	game_state() {
 		this.logger.log(`Player1: ${this.first_player.id}`);
@@ -76,8 +77,8 @@ class Pong {
 	}
 
 	change_ball_pos(player_1: Player, player_2: Player) {
-		this.ball_x += 10 * Math.cos(this.ball_angle);
-		this.ball_y += 10 * Math.sin(this.ball_angle);
+		this.ball_x += this.ball_speed * Math.cos(this.ball_angle); //
+		this.ball_y += this.ball_speed * Math.sin(this.ball_angle); //
 		if (this.ball_x > 700) {
 			player_1.score += 1;
 			this.ball_x = 350;
@@ -125,21 +126,6 @@ class Pong {
 		}
 	}
 
-	add_player(p: Player) {
-		if (this.first_player == null) {
-			this.first_player = p;
-		} else if (this.second_player == null) {
-			this.first_player.socket.emit("players", "First player");
-			this.second_player = p;
-			this.is_running = true;
-			this.ball_x = 350;
-			this.ball_y = 250;
-			this.run_game()
-		} else {
-			this.spectator.push(p);
-		}
-	}
-
 	remove_player(id: string) {
 		if (this.first_player && this.first_player.id == id) {
 			this.first_player = null;
@@ -163,6 +149,21 @@ class Pong {
 		this.logger.log(this.spectator.length)
 	}
 
+	add_player(p: Player) {
+		if (this.first_player == null) {
+			this.first_player = p;
+		} else if (this.second_player == null) {
+			this.first_player.socket.emit("players", "First player");
+			this.second_player = p;
+			this.is_running = true;
+			this.ball_x = 350;
+			this.ball_y = 250;
+			this.run_game()
+		} else {
+			this.spectator.push(p);
+		}
+	}
+
 	set_details(id: string)
 	{
 		if (this.first_player && this.first_player.id == id)
@@ -172,11 +173,11 @@ class Pong {
 			details.score = this.first_player.score;
 			details.opponent_score = this.second_player.score;
 			if (this.first_player.score >= this.winning_score)
-				details.has_won = true;
+			details.has_won = true;
 			else if (this.second_player.score >= this.winning_score)
-				details.has_won = false;
+			details.has_won = false;
 		}
-
+		
 		else if (this.second_player && this.second_player.id == id)
 		{
 			details.login = this.second_player.id;
@@ -184,11 +185,11 @@ class Pong {
 			details.score = this.second_player.score;
 			details.opponent_score = this.first_player.score;
 			if (this.second_player.score >= this.winning_score)
-				details.has_won = true;
+			details.has_won = true;
 			else if (this.first_player.score >= this.winning_score)
-				details.has_won = false;
+			details.has_won = false;
 		}
-
+		
 		this.logger.log(`details.login ${details.login}`);
 		this.logger.log(`details.opponent_login ${details.opponent_login}`);
 		this.logger.log(`details.score ${details.score}`);
@@ -196,10 +197,10 @@ class Pong {
 		this.logger.log(`details.has_won ${details.has_won}`);
 		this.logger.log(`--------------------------------`);
 	}
-
+	
 	async database_create(id: string): Promise<void> {
 		this.set_details(id);
-		await this.appService.createUser(details);
+		await this.gameService.createUser(details);
 	}
 
 	set_delta(delta: number, id: string) {
@@ -212,12 +213,12 @@ class Pong {
 }
 
 @WebSocketGateway({ cors: true })
-export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-	constructor(private appService: AppService) {}
+	constructor(private gameService: GameService) {}
 	@WebSocketServer() wss: Server;
 
-	game: Pong = new Pong(this.appService);
+	game: Pong = new Pong(this.gameService);
 
 	afterInit() {}
 
@@ -230,7 +231,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 		else if (this.game.first_player && this.game.second_player == null) {
 			client.emit("players", "Second player");
 		}
-		else 
+		else
 			client.emit("players", "Watching");
 		this.game.add_player(new Player(client.id, client));
 	}
@@ -239,7 +240,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 		this.game.remove_player(client.id);
 	}
 
-	private logger: Logger = new Logger('AppGateway');
+	private logger: Logger = new Logger('GameGateway');
 
 	@SubscribeMessage('setPosition')
 	handleMessage(client: Socket, message: string): void {
@@ -250,6 +251,12 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 		} else if (message == 'o') {
 			this.game.set_delta(0, client.id);
 		}
+	}
+
+	@SubscribeMessage('set_speed')
+	handleSpeed(client: Socket, message: any): void {
+		const obj = message;
+		this.game.ball_speed = obj.ball_speed;
 	}
 
 	@SubscribeMessage('play_again')

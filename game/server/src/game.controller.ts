@@ -1,11 +1,11 @@
 import { Controller, Inject, Get} from '@nestjs/common';
-import { AppService } from './app.service';
+import { GameService } from './game.service';
 import { Game } from './game.entity';
 
 @Controller('game')
-export class AppController {
-@Inject(AppService)
-	private readonly service: AppService;
+export class GameController {
+@Inject(GameService)
+	private readonly service: GameService;
 
 	@Get("")
 	public getChat() : Promise<Game[]> {
