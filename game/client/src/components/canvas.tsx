@@ -122,17 +122,17 @@ function Canvas() {
 		<Table>
 			<tbody>
 			<TableRow>
-				<TableCell>Player status</TableCell>
-				<TableCell colSpan={2}>{player_status}</TableCell>
+				<TableCell sx={{ fontFamily: 'Courier', }}>Player status</TableCell>
+				<TableCell sx={{ fontFamily: 'Courier', }} colSpan={2}>{player_status}</TableCell>
 			</TableRow>
 			<TableRow>
-				<TableCell>Winning score</TableCell>
-				<TableCell colSpan={2}>{winning_score}</TableCell>
+				<TableCell sx={{ fontFamily: 'Courier', }}>Winning score</TableCell>
+				<TableCell sx={{ fontFamily: 'Courier', }} colSpan={2}>{winning_score}</TableCell>
 			</TableRow>
 			<TableRow>
-				<TableCell>Scores</TableCell>
-				<TableCell>{score_board[0]}</TableCell>
-				<TableCell>{score_board[1]}</TableCell>
+				<TableCell sx={{ fontFamily: 'Courier', }}>Scores</TableCell>
+				<TableCell sx={{ fontFamily: 'Courier', }}>{score_board[0]}</TableCell>
+				<TableCell sx={{ fontFamily: 'Courier', }}>{score_board[1]}</TableCell>
 			</TableRow>
 			</tbody>
 		</Table>
@@ -145,7 +145,7 @@ function Canvas() {
 			defaultValue={10}
 			value={ball_speed}
 			onChange={handleSpeedChange}
-			step={2}
+			step={5}
 			marks={true}
 			min={5}
 			max={20}

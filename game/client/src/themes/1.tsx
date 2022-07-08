@@ -1,4 +1,3 @@
-
 // https://dragoshmocrii.com/material-ui-custom-theme-and-typescript/
 import { createTheme } from '@material-ui/core/styles';
 
@@ -19,9 +18,9 @@ const theme_1 = {
     },
 
 	typography: {
-		fontFamily: "'Montserrat', sans-serif",
-		textTransform: "none",
+		fontFamily: "Arial",
 	},
+
 	sidebarWidth: 240
 } as const;
 
