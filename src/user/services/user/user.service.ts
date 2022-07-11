@@ -1,0 +1,23 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../../../typeorm';
+import { UserDetails } from '../../../utils/types';
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class UserService {
+	constructor(@InjectRepository(User) private readonly userRepo: Repository<User>) {}
+
+	async updateOne(details: UserDetails) {
+		const { intraId } = details;
+		const user = await this.userRepo.findOne({
+			where: {
+				intraId: intraId,
+			}
+		});
+		if (user) {
+			this.userRepo.update({ intraId }, details);
+			// console.log(`${details.username} updated`);
+		}
+	}
+}

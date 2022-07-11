@@ -17,7 +17,6 @@ export class AuthService implements IAuthService {
 			}
 		});
 		if (user) {
-			await this.userRepo.update({ intraId }, details);
 			return user;
 		}
 		return this.createUser(details);
