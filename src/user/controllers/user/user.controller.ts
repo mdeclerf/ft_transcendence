@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { diskStorage } from 'multer';
@@ -31,13 +31,25 @@ export class UserController {
 	uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
 		const user: UserDetails = req.user;
 
-		user.photoURL = "http://localhost:3001/api/user/profile-image/" + file.filename;
+		user.photoURL = "http://localhost:3001/api/user/profile_image/" + file.filename;
 
 		return this.userService.updateOne(user);
 	}
 
-	@Get('profile-image/:imagename')
+	@Get('profile_image/:imagename')
 	findProfileImage(@Param('imagename') imagename: string, @Res() res: Response) {
 		return res.sendFile(join(process.cwd(), 'uploads/profile_pictures/' + imagename));
+	}
+
+	@Get('name_change')
+	async setUsername(@Query('username') newUsername: string, @Req() req: Request, @Res() res: Response) {
+		const user: UserDetails = req.user;
+
+		const taken = await this.userService.findUserByUsername(newUsername);
+
+		user.username = newUsername;
+
+		this.userService.updateOne(user);
+		return res.redirect("http://localhost:3000/account");
 	}
 }

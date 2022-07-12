@@ -20,4 +20,12 @@ export class UserService {
 			// console.log(`${details.username} updated`);
 		}
 	}
+
+	findUserByUsername(username: string): Promise<User | undefined> {
+		return this.userRepo.findOne({
+			where: {
+				username: username,
+			},
+		});
+	}
 }
