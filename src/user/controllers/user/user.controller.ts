@@ -42,14 +42,18 @@ export class UserController {
 	}
 
 	@Get('name_change')
+	@UseGuards(AuthenticatedGuard)
 	async setUsername(@Query('username') newUsername: string, @Req() req: Request, @Res() res: Response) {
 		const user: UserDetails = req.user;
 
 		const taken = await this.userService.findUserByUsername(newUsername);
 
+		if (taken)
+			return res.json({ taken: true });
+
 		user.username = newUsername;
 
 		this.userService.updateOne(user);
-		return res.redirect("http://localhost:3000/account");
+		return res.json({ taken: false });
 	}
 }
