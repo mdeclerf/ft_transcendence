@@ -17,4 +17,7 @@ export class User {
 
 	@Column({ name: 'photo_url', nullable: true})
 	photoURL: string;
+
+	@Column({ nullable: true})
+	twoFactorAuthenticationSecret: string;
 }

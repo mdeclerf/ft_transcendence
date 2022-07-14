@@ -1,4 +1,9 @@
+import { Request } from "express";
 import { User } from "../typeorm";
+
+export interface RequestWithUser extends Request {
+	user: User;
+}
 
 export type UserDetails = {
 	username?: string;

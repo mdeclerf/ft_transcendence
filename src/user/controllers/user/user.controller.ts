@@ -49,11 +49,23 @@ export class UserController {
 		const taken = await this.userService.findUserByUsername(newUsername);
 
 		if (taken)
-			return res.json({ taken: true });
+			return res.json({ taken: true, user: user });
 
 		user.username = newUsername;
 
 		this.userService.updateOne(user);
-		return res.json({ taken: false });
+		return res.json({ taken: false, user: user });
+	}
+
+	@Get(':username')
+	@UseGuards(AuthenticatedGuard)
+	async getUser(@Param('username') username: string, @Res() res: Response) {
+		const user = await this.userService.findUserByUsername(username);
+
+		if (user) {
+			return res.json({ found: true, user: user });
+		} else {
+			return res.json({ found: false, user: null });
+		}
 	}
 }

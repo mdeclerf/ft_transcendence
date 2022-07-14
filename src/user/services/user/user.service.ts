@@ -6,7 +6,9 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-	constructor(@InjectRepository(User) private readonly userRepo: Repository<User>) {}
+	constructor(
+		@InjectRepository(User) private readonly userRepo: Repository<User>
+	) {}
 
 	async updateOne(details: UserDetails) {
 		const { intraId } = details;
@@ -27,5 +29,9 @@ export class UserService {
 				username: username,
 			},
 		});
+	}
+
+	async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+		return this.userRepo.update(userId, { twoFactorAuthenticationSecret: secret });
 	}
 }
