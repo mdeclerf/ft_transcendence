@@ -4,7 +4,6 @@ import { AuthenticatedGuard } from "src/auth/guards/intra-oauth.guard";
 import { AuthService } from "src/auth/services/auth.service";
 import { TwoFactorAuthenticationService } from "src/user/services/user/2fa.service";
 import { UserService } from "src/user/services/user/user.service";
-import { TwoFactorAuthCodeDto } from "src/user/twoFactorAuthCode.dto";
 import { RequestWithUser } from "src/utils/types";
 
 @Controller('2fa')
@@ -40,7 +39,7 @@ export class TwoFactorAuthenticationController {
 	@UseGuards(AuthenticatedGuard)
 	async authenticate(
 		@Req() req: RequestWithUser,
-		@Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
+		@Body() twoFactorAuthCode: string,
 	) {
 		console.log('auth code', twoFactorAuthCode);
 		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthCodeValid(
