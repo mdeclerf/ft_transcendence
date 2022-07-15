@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthService } from 'src/auth/services/auth.service';
 import { User } from '../typeorm';
 import { TwoFactorAuthenticationController } from './controllers/user/2fa.controller';
 import { UserController } from './controllers/user/user.controller';
@@ -16,6 +17,10 @@ import { UserService } from './services/user/user.service';
     {
       provide: '2FA_SERVICE',
       useClass: TwoFactorAuthenticationService,
+    },
+    {
+      provide: 'AUTH_SERVICE',
+      useClass: AuthService,
     },
   ],
   imports: [
