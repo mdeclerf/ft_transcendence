@@ -50,6 +50,7 @@ class Pong {
 	ball_x: number = 350;
 	ball_y: number = 250;
 	ball_angle: number = random_ball();
+	players_waiting: any = [];
 	spectator: any = [];
 	winning_score: number = 10;
 	ball_speed: number = 10;
@@ -197,7 +198,7 @@ class Pong {
 		this.logger.log(`details.has_won ${details.has_won}`);
 		this.logger.log(`--------------------------------`);
 	}
-	
+
 	async database_create(id: string): Promise<void> {
 		this.set_details(id);
 		await this.gameService.createUser(details);
@@ -253,11 +254,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 	}
 
-	@SubscribeMessage('set_speed')
-	handleSpeed(client: Socket, message: any): void {
-		const obj = message;
-		this.game.ball_speed = obj.ball_speed;
-	}
+	// @SubscribeMessage('set_speed')
+	// handleSpeed(client: Socket, message: any): void {
+	// 	const obj = message;
+	// 	this.game.ball_speed = obj.ball_speed;
+	// }
 
 	@SubscribeMessage('play_again')
 	handleReplay(client: Socket, message: string) : void {

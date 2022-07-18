@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState} from 'react';
 import { io } from "socket.io-client";
 import Button from '@mui/material/Button';
-import { Slider } from '@mui/material';
+// import { Slider } from '@mui/material';
 import { Table } from '@mui/material';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -47,22 +47,26 @@ const draw_players = (context:any, ball_color: string, paddle_color: string, pla
 	};
 }
 
-function Canvas() {
+function Canvas(props:any) {
 	let ball_color: string = '#000';
 	let paddle_color: string = '#000';
 
 	const [score_board, setScore_board] = useState<string[]>(['0','0']);
-	const [ball_speed, setBall_speed] = useState<number | number[]>(10);
+	// const [ball_speed, setBall_speed] = useState<number | number[]>(10);
 	const canvasRef = useRef(null);
 
 	const handlePlayClick = () => {
 		ws.emit('play_again', {player_status});
 	};
 
-	const handleSpeedChange = (event: Event, value: number | number[]) => {
-		setBall_speed(value);
-		ws.emit('set_speed', {ball_speed});
+	const handleMatchmakingClick = () => {
+		ws.emit('add_matchmaking', {player_status});
 	};
+
+	// const handleSpeedChange = (event: Event, value: number | number[]) => {
+	// 	setBall_speed(value);
+	// 	ws.emit('set_speed', {ball_speed});
+	// };
 
 	useEffect(() => {
 		const canvas: any = canvasRef.current;
@@ -115,9 +119,7 @@ function Canvas() {
 	}, []);
 
 	return (
-		<>
-		<Stack spacing={2}>
-
+		 <Stack spacing={2}>
 
 		<Table>
 			<tbody>
@@ -137,26 +139,12 @@ function Canvas() {
 			</tbody>
 		</Table>
 
-		{(player_status !== "Watching") &&
-			<div>
-			<h5>Adjust the speed of the ball</h5>
-			<Slider
-			aria-label="Small steps"
-			defaultValue={10}
-			value={ball_speed}
-			onChange={handleSpeedChange}
-			step={5}
-			marks={true}
-			min={5}
-			max={20}
-			valueLabelDisplay="auto"
-		/></div> }
-
 		<canvas ref={canvasRef}></canvas>
+
 		{(player_status !== "Watching" && (parseInt(score_board[0]) >= winning_score || parseInt(score_board[1]) >= winning_score)) &&
 			<Button variant="contained" onClick={handlePlayClick}>Play again !</Button> }
+
 		</Stack>
-		</>
 	);
 }
 
