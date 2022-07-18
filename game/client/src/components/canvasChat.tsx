@@ -1,19 +1,11 @@
 import React, { useEffect, useRef, useState} from 'react';
 import { io } from "socket.io-client";
 import Button from '@mui/material/Button';
+// import { Slider } from '@mui/material';
 import { Table } from '@mui/material';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Stack from '@mui/material/Stack';
-import {
-	BrowserRouter as Router,
-	Routes,
-	Route,
-	Link
-} from 'react-router-dom';
-import { ButtonGroup } from '@material-ui/core';
-import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
 
 const ws = io("http://localhost:3001");
 // const ws = io("http://10.2.6.5:3001");
@@ -55,22 +47,25 @@ const draw_players = (context:any, ball_color: string, paddle_color: string, pla
 	};
 }
 
-const handlePlayClick = () => {
-	ws.emit('play_again', {player_status});
-};
-
-const handleMatchmakingClick = () => {
-};
-
-function Canvas() {
+function CanvasChat(props:any) {
 	let ball_color: string = '#000';
 	let paddle_color: string = '#000';
 
 	const [score_board, setScore_board] = useState<string[]>(['0','0']);
+	// const [ball_speed, setBall_speed] = useState<number | number[]>(10);
 	const canvasRef = useRef(null);
 
+	const handlePlayClick = () => {
+		ws.emit('play_again', {player_status});
+	};
+
+	// const handleSpeedChange = (event: Event, value: number | number[]) => {
+	// 	setBall_speed(value);
+	// 	ws.emit('set_speed', {ball_speed});
+	// };
+
 	useEffect(() => {
-		const canvas : any= canvasRef.current;
+		const canvas: any = canvasRef.current;
 		canvas.style.backgroundColor = 'white';
 		canvas.style.borderRadius = '10px';
 		canvas.width = CANVAS_WIDTH;
@@ -120,7 +115,7 @@ function Canvas() {
 	}, []);
 
 	return (
-		<Stack spacing={2}>
+		 <Stack spacing={2}>
 
 		<Table>
 			<tbody>
@@ -145,102 +140,8 @@ function Canvas() {
 		{(player_status !== "Watching" && (parseInt(score_board[0]) >= winning_score || parseInt(score_board[1]) >= winning_score)) &&
 			<Button variant="contained" onClick={handlePlayClick}>Play again !</Button> }
 
-		{(player_status === "Watching") &&
-			<Button variant="contained" onClick={handleMatchmakingClick}>Add me to queue</Button> }
-
-		</Stack> 
+		</Stack>
 	);
 }
 
-export default Canvas;
-
-// {(player_status !== "Watching" && (parseInt(score_board[0]) >= winning_score || parseInt(score_board[1]) >= winning_score)) &&
-// 	<Button variant="contained" onClick={handlePlayClick}>Play again !</Button> }
-
-// {(player_status === "Watching") &&
-// 	<Button variant="contained" onClick={handleMatchmakingClick}>Add me to queue</Button> }
-
-
-
-// return (
-// 	<Router>
-// 		<div>
-// 			<Box textAlign='center'>
-// 				<ButtonGroup  disableElevation color="primary" variant="contained">
-// 					<Button component={Link} to="/chat">
-// 						Chat mode
-// 					</Button>
-
-// 					<Button component={Link} to="/normal">
-// 						Normal mode
-// 					</Button>
-// 				</ButtonGroup>
-// 			</Box>
-
-// 			<Routes>
-// 				<Route path='/chat' element={
-// 					<Stack spacing={2}>
-
-// 					<Table>
-// 						<tbody>
-// 						<TableRow>
-// 							<TableCell sx={{ fontFamily: 'Courier', }}>Player status</TableCell>
-// 							<TableCell sx={{ fontFamily: 'Courier', }} colSpan={2}>{player_status}</TableCell>
-// 						</TableRow>
-// 						<TableRow>
-// 							<TableCell sx={{ fontFamily: 'Courier', }}>Winning score</TableCell>
-// 							<TableCell sx={{ fontFamily: 'Courier', }} colSpan={2}>{winning_score}</TableCell>
-// 						</TableRow>
-// 						<TableRow>
-// 							<TableCell sx={{ fontFamily: 'Courier', }}>Scores</TableCell>
-// 							<TableCell sx={{ fontFamily: 'Courier', }}>{score_board[0]}</TableCell>
-// 							<TableCell sx={{ fontFamily: 'Courier', }}>{score_board[1]}</TableCell>
-// 						</TableRow>
-// 						</tbody>
-// 					</Table>
-			
-// 					<canvas ref={canvasRef}></canvas>
-			
-// 					{(player_status !== "Watching" && (parseInt(score_board[0]) >= winning_score || parseInt(score_board[1]) >= winning_score)) &&
-// 						<Button variant="contained" onClick={handlePlayClick}>Play again !</Button> }
-			
-// 					</Stack>
-// 				}>
-// 				</Route>
-
-// 				<Route path='/normal' element={
-// 					<Grid container justifyContent='center'>
-// 						<Stack spacing={2}>
-
-// 							<Table>
-// 								<tbody>
-// 								<TableRow>
-// 									<TableCell sx={{ fontFamily: 'Courier', }}>Player status</TableCell>
-// 									<TableCell sx={{ fontFamily: 'Courier', }} colSpan={2}>{player_status}</TableCell>
-// 								</TableRow>
-// 								<TableRow>
-// 									<TableCell sx={{ fontFamily: 'Courier', }}>Winning score</TableCell>
-// 									<TableCell sx={{ fontFamily: 'Courier', }} colSpan={2}>{winning_score}</TableCell>
-// 								</TableRow>
-// 								<TableRow>
-// 									<TableCell sx={{ fontFamily: 'Courier', }}>Scores</TableCell>
-// 									<TableCell sx={{ fontFamily: 'Courier', }}>{score_board[0]}</TableCell>
-// 									<TableCell sx={{ fontFamily: 'Courier', }}>{score_board[1]}</TableCell>
-// 								</TableRow>
-// 								</tbody>
-// 							</Table>
-
-// 							<canvas ref={canvasRef}></canvas>
-
-// 							{(player_status === "Watching") &&
-// 								<Button variant="contained" onClick={handleMatchmakingClick}>Add me to queue</Button> }
-
-// 							</Stack>
-// 					</Grid>
-// 				}>
-// 				</Route>
-// 			</Routes>
-
-// 		</div>
-// 		</Router>
-// );
+export default CanvasChat;

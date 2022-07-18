@@ -52,7 +52,7 @@ class Pong {
 	ball_angle: number = random_ball();
 	players_waiting: any = [];
 	spectator: any = [];
-	winning_score: number = 10;
+	winning_score: number = 3;
 	ball_speed: number = 10;
 
 	constructor(private gameService: GameService) {}
@@ -254,20 +254,20 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 	}
 
+	@SubscribeMessage('play_again')
+	handleReplay(client: Socket, message: string) : void {
+	if (!JSON.stringify(message).includes("Watching") && !this.game.is_running) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+	{
+		this.game.is_running = true;
+		this.game.first_player.score = 0;
+		this.game.second_player.score = 0;
+		this.game.run_game();
+	}
+}
+
 	// @SubscribeMessage('set_speed')
 	// handleSpeed(client: Socket, message: any): void {
 	// 	const obj = message;
 	// 	this.game.ball_speed = obj.ball_speed;
 	// }
-
-	@SubscribeMessage('play_again')
-	handleReplay(client: Socket, message: string) : void {
-		if (!JSON.stringify(message).includes("Watching") && !this.game.is_running) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
-		{
-			this.game.is_running = true;
-			this.game.first_player.score = 0;
-			this.game.second_player.score = 0;
-			this.game.run_game();
-		}
-	}
 }
