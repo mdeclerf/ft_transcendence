@@ -36,6 +36,10 @@ export class UserService {
 	}
 
 	async enableTwoFactorAuthentication(userId: number) {
-		return this.userRepo.update(userId, { isTwoFactorAuthenticationEnabled: true });
+		return this.userRepo.update(userId, { isTwoFactorAuthenticationEnabled: true, isSecondFactorAuthenticated: true });
+	}
+
+	async secondFactorAuthenticate(userId: number, state: boolean) {
+		return this.userRepo.update(userId, { isSecondFactorAuthenticated: state });
 	}
 }

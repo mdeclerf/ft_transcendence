@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserService } from 'src/user/services/user/user.service';
 import { Session, User } from '../typeorm';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
@@ -14,6 +15,10 @@ import { SessionSerializer } from './utils/Serializer';
     {
       provide: 'AUTH_SERVICE',
       useClass: AuthService,
+    },
+    {
+      provide: 'USER_SERVICE',
+      useClass: UserService,
     },
   ],
   imports: [

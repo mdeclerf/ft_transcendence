@@ -1,13 +1,14 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, HttpCode, Inject, Post, Req, Res, UnauthorizedException, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, HttpCode, Inject, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { AuthenticatedGuard } from "src/auth/guards/intra-oauth.guard";
 import { AuthService } from "src/auth/services/auth.service";
 import { TwoFactorAuthenticationService } from "src/user/services/user/2fa.service";
 import { UserService } from "src/user/services/user/user.service";
+import { TwoFactorAuthCodeDto } from "src/utils/twoFactorAuthCode.dto";
 import { RequestWithUser } from "src/utils/types";
 
 @Controller('2fa')
-@UseInterceptors(ClassSerializerInterceptor)
+// @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthenticationController {
 	constructor(
 		@Inject('2FA_SERVICE') private readonly twoFactorAuthenticationService: TwoFactorAuthenticationService,
@@ -23,15 +24,18 @@ export class TwoFactorAuthenticationController {
 		return this.twoFactorAuthenticationService.pipeQrCodeStream(res, otpauthURL);
 	}
 
-	@Post('on')
+	@Post('turn_on')
 	@HttpCode(200)
 	@UseGuards(AuthenticatedGuard)
-	async turnOnTwoFactorAuthentication(@Req() req: RequestWithUser, @Body() twoFactorAuthCode: string) {
+	async turnOnTwoFactorAuthentication(@Req() req: RequestWithUser, @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto) {
 		const isValid = this.twoFactorAuthenticationService.isTwoFactorAuthCodeValid(twoFactorAuthCode, req.user);
+
+		// console.log(twoFactorAuthCode);
 
 		if (!isValid) throw new UnauthorizedException('Wrong authentication code');
 
 		await this.userService.enableTwoFactorAuthentication(req.user.id);
+		return 'ok';
 	}
 
 	@Post('authenticate')
@@ -39,9 +43,10 @@ export class TwoFactorAuthenticationController {
 	@UseGuards(AuthenticatedGuard)
 	async authenticate(
 		@Req() req: RequestWithUser,
-		@Body() twoFactorAuthCode: string,
+		@Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
 	) {
-		console.log('auth code', twoFactorAuthCode);
+		console.log(twoFactorAuthCode);
+		// console.log(req.user);
 		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthCodeValid(
 			twoFactorAuthCode, req.user
 		);
@@ -49,6 +54,8 @@ export class TwoFactorAuthenticationController {
 		if (!isCodeValid) throw new UnauthorizedException('Wrong authentication code');
 
 		this.authService.validateUser(req.user);
+
+		this.userService.secondFactorAuthenticate(req.user.id, true);
 
 		return req.user;
 	}

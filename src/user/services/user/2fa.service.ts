@@ -23,7 +23,7 @@ export class TwoFactorAuthenticationService {
 		return toFileStream(stream, otpauthURL);
 	}
 
-	isTwoFactorAuthCodeValid(twoFactorAuthCode: string, user: User) {
+	isTwoFactorAuthCodeValid(twoFactorAuthCode: string, user: User): boolean {
 		return authenticator.verify({
 			token: twoFactorAuthCode,
 			secret: user.twoFactorAuthenticationSecret,
