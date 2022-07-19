@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@mui/material": "^5.9.1",
     "@nestjs/platform-socket.io": "^8.4.7",
-    "@nestjs/websockets": "^8.4.7"
+    "@nestjs/websockets": "^8.4.7",
+    "react-router-dom": "^6.3.0",
+    "socket.io-client": "^4.5.1"
   }
 }

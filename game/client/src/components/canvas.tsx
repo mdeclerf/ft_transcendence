@@ -11,7 +11,7 @@ import {
 	Route,
 	Link
 } from 'react-router-dom';
-import { ButtonGroup } from '@material-ui/core';
+import { ButtonGroup } from '@mui/material';
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
 

@@ -3,7 +3,7 @@ import  theme_2  from './themes/2';
 import  theme_1  from './themes/1';
 import Canvas from './components/canvas';
 import { ThemeProvider } from '@mui/material/styles';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import Button from "@mui/material/Button";
 import { CssBaseline } from "@mui/material";
 

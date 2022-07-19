@@ -1,35 +1,24 @@
 {
-  "name": "client",
+  "name": "my-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
-    "@material-ui/core": "^4.12.4",
-    "@material-ui/styles": "^4.11.5",
-    "@mui/icons-material": "^5.8.4",
-    "@mui/lab": "^5.0.0-alpha.89",
-    "@mui/material": "^5.8.7",
-    "@mui/styled-engine-sc": "^5.8.0",
-    "@mui/styles": "^5.8.7",
-    "@nestjs/platform-socket.io": "^8.4.7",
-    "@nestjs/websockets": "^8.4.7",
+    "@mui/material": "^5.9.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^0.27.2",
-    "babel-template": "^6.26.0",
-    "local-ip-address": "^1.0.0",
-    "os": "^0.1.2",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.45",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
     "react": "^18.2.0",
-    "react-color-theme": "^1.0.3",
     "react-dom": "^18.2.0",
-    "react-modules": "^1.0.8",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
-    "socket.io": "^4.5.1",
     "socket.io-client": "^4.5.1",
-    "styled-components": "^5.3.5",
+    "typescript": "^4.7.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -55,13 +44,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/jest": "^28.1.4",
-    "@types/material-ui": "^0.21.12",
-    "@types/node": "^18.0.1",
-    "@types/react": "^18.0.14",
-    "@types/react-dom": "^18.0.6",
-    "typescript": "^4.7.4"
   }
 }

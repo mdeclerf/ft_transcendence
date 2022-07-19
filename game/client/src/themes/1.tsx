@@ -1,5 +1,5 @@
 // https://dragoshmocrii.com/material-ui-custom-theme-and-typescript/
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 const theme_1 = {
     palette: {
@@ -27,7 +27,7 @@ const theme_1 = {
 type CustomTheme = {
 	[Key in keyof typeof theme_1]: typeof theme_1[Key]
 }
-declare module '@material-ui/core/styles/createTheme' {
+declare module '@mui/material/styles/createTheme' {
     interface Theme extends CustomTheme { }
     interface ThemeOptions extends CustomTheme { }
 }
