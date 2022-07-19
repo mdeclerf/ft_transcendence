@@ -19,7 +19,6 @@ export class UserService {
 		});
 		if (user) {
 			this.userRepo.update({ intraId }, details);
-			// console.log(`${details.username} updated`);
 		}
 	}
 
@@ -37,6 +36,10 @@ export class UserService {
 
 	async enableTwoFactorAuthentication(userId: number) {
 		return this.userRepo.update(userId, { isTwoFactorAuthenticationEnabled: true, isSecondFactorAuthenticated: true });
+	}
+
+	async disableTwoFactorAuthentication(userId: number) {
+		return this.userRepo.update(userId, { isTwoFactorAuthenticationEnabled: false, isSecondFactorAuthenticated: false, twoFactorAuthenticationSecret: null});
 	}
 
 	async secondFactorAuthenticate(userId: number, state: boolean) {

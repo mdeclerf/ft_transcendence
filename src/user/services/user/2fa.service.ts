@@ -10,7 +10,7 @@ export class TwoFactorAuthenticationService {
 	constructor(@Inject('USER_SERVICE') private readonly userService: UserService) {}
 
 	async generateTwoFactorAuthenticationSecret(user: User) {
-		const secret = authenticator.generateSecret();
+		const secret: string = user.twoFactorAuthenticationSecret || authenticator.generateSecret();
 
 		const otpauthURL = authenticator.keyuri(user.intraId, 'ft_transcendence', secret);
 

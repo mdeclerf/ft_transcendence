@@ -30,12 +30,20 @@ export class TwoFactorAuthenticationController {
 	async turnOnTwoFactorAuthentication(@Req() req: RequestWithUser, @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto) {
 		const isValid = this.twoFactorAuthenticationService.isTwoFactorAuthCodeValid(twoFactorAuthCode, req.user);
 
-		// console.log(twoFactorAuthCode);
-
 		if (!isValid) throw new UnauthorizedException('Wrong authentication code');
 
 		await this.userService.enableTwoFactorAuthentication(req.user.id);
-		return 'ok';
+	}
+
+	@Post('turn_off')
+	@HttpCode(200)
+	@UseGuards(AuthenticatedGuard)
+	async turnOffTwoFactorAuthentication(@Req() req: RequestWithUser, @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto) {
+		const isValid = this.twoFactorAuthenticationService.isTwoFactorAuthCodeValid(twoFactorAuthCode, req.user);
+
+		if (!isValid) throw new UnauthorizedException('Wrong authentication code');
+
+		await this.userService.disableTwoFactorAuthentication(req.user.id);
 	}
 
 	@Post('authenticate')
@@ -45,12 +53,9 @@ export class TwoFactorAuthenticationController {
 		@Req() req: RequestWithUser,
 		@Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
 	) {
-		console.log(twoFactorAuthCode);
-		// console.log(req.user);
 		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthCodeValid(
 			twoFactorAuthCode, req.user
 		);
-		console.log('code', isCodeValid);
 		if (!isCodeValid) throw new UnauthorizedException('Wrong authentication code');
 
 		this.authService.validateUser(req.user);

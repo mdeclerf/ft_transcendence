@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Req, Res, UseGuards } from '@nestjs/common';
+import { ClassSerializerInterceptor, Controller, Get, Inject, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from 'src/user/services/user/user.service';
 import { RequestWithUser } from 'src/utils/types';
@@ -16,15 +16,12 @@ export class AuthController {
 	@Get('redirect')
 	@UseGuards(IntraAuthGuard)
 	redirect(@Req() req: RequestWithUser, @Res() res: Response) {
-		if (!req.user.isTwoFactorAuthenticationEnabled) {
-			res.redirect('http://localhost:3000/game');
-		} else {
-			res.redirect('http://localhost:3000/');
-		}
+		res.redirect('http://localhost:3000/');
 	}
 
 	@Get('status')
 	@UseGuards(AuthenticatedGuard)
+	@UseInterceptors(ClassSerializerInterceptor)
 	status(@Req() req: RequestWithUser) {
 		return req.user;
 	}

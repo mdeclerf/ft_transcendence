@@ -1,7 +1,11 @@
+import { Exclude } from "class-transformer";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
 export class User {
+	constructor(partial: Partial<User>) {
+		Object.assign(this, partial);
+	}
 	
 	@PrimaryGeneratedColumn()
 	id: number;
@@ -18,6 +22,7 @@ export class User {
 	@Column({ name: 'photo_url', nullable: true})
 	photoURL: string;
 
+	@Exclude()
 	@Column({ nullable: true})
 	twoFactorAuthenticationSecret: string;
 

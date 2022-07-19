@@ -7,9 +7,7 @@ export class IntraAuthGuard extends AuthGuard('42') {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const activate = (await super.canActivate(context)) as boolean;
 		const request: RequestWithUser = context.switchToHttp().getRequest();
-		console.log(request.user);
 		await super.logIn(request);
-		console.log(activate);
 		return activate;
 	}
 }
@@ -17,7 +15,7 @@ export class IntraAuthGuard extends AuthGuard('42') {
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const req = context.switchToHttp().getRequest();
+		const req: RequestWithUser = context.switchToHttp().getRequest();
 		return req.isAuthenticated();
 	}
 }
