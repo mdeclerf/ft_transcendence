@@ -29,7 +29,7 @@ function Mode() {
 		<>
 		{ ( location.pathname === "/" ) &&
 			<Box textAlign='center'>
-			<ButtonGroup  disableElevation color="primary" variant="contained">
+			<ButtonGroup  disableElevation color="primary" variant="contained" size="large">
 				<Button component={Link} to="/chat" onClick={handleChatMode}>
 					Chat mode
 				</Button>

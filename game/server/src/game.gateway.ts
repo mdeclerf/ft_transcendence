@@ -45,7 +45,7 @@ class Player {
 
 class Pong {
 	private logger: Logger = new Logger('GameGateway');
-	is_running: boolean;
+	is_running: boolean = false; //
 	first_player: Player = null;
 	second_player: Player = null;
 	ball_x: number = 350;
@@ -79,8 +79,8 @@ class Pong {
 	}
 
 	change_ball_pos(player_1: Player, player_2: Player) {
-		this.ball_x += this.ball_speed * Math.cos(this.ball_angle); //
-		this.ball_y += this.ball_speed * Math.sin(this.ball_angle); //
+		this.ball_x += this.ball_speed * Math.cos(this.ball_angle);
+		this.ball_y += this.ball_speed * Math.sin(this.ball_angle);
 		if (this.ball_x > 700) {
 			player_1.score += 1;
 			this.ball_x = 350;
@@ -102,6 +102,14 @@ class Pong {
 		}
 		if (this.touch_player(this.second_player)) {
 			this.ball_angle = Math.PI - this.ball_angle;
+		}
+	}
+
+	set_delta(delta: number, id: string) {
+		if (this.first_player && this.first_player.id == id) {
+			this.first_player.delta = delta;
+		} else if (this.second_player && this.second_player.id == id) {
+			this.second_player.delta = delta;
 		}
 	}
 
@@ -191,7 +199,7 @@ class Pong {
 			else if (this.first_player.score >= this.winning_score)
 			details.has_won = false;
 		}
-		
+
 		this.logger.log(`details.login ${details.login}`);
 		this.logger.log(`details.opponent_login ${details.opponent_login}`);
 		this.logger.log(`details.score ${details.score}`);
@@ -203,14 +211,6 @@ class Pong {
 	async database_create(id: string): Promise<void> {
 		this.set_details(id);
 		await this.gameService.createUser(details);
-	}
-
-	set_delta(delta: number, id: string) {
-		if (this.first_player && this.first_player.id == id) {
-			this.first_player.delta = delta;
-		} else if (this.second_player && this.second_player.id == id) {
-			this.second_player.delta = delta;
-		}
 	}
 }
 
@@ -225,17 +225,21 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	afterInit() {}
 
 	handleConnection(client: Socket, ...args: any[]) {
-		client.emit("winning_score", this.game.winning_score.toString());
-
-		if (this.game.first_player == null) {
-			client.emit("players", "First player");
+		if(mode !== ""){
+			client.emit("winning_score", this.game.winning_score.toString());
+	
+			if (this.game.first_player == null) {
+				client.emit("players", "First player");
+			}
+	
+			else if (this.game.first_player && this.game.second_player == null) {
+				client.emit("players", "Second player");
+			}
+	
+			else
+				client.emit("players", "Watching");
+			this.game.add_player(new Player(client.id, client));
 		}
-		else if (this.game.first_player && this.game.second_player == null) {
-			client.emit("players", "Second player");
-		}
-		else
-			client.emit("players", "Watching");
-		this.game.add_player(new Player(client.id, client));
 	}
 
 	handleDisconnect(client: Socket){
@@ -266,16 +270,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 }
 
-	// @SubscribeMessage('set_speed')
-	// handleSpeed(client: Socket, message: any): void {
-	// 	const obj = message;
-	// 	this.game.ball_speed = obj.ball_speed;
-	// }
-
 	@SubscribeMessage('mode_choice')
 	handleMode(client: Socket, message: any) : void {
 		const obj = message;
 		mode = obj.mode;
-		console.log(mode);
+		this.logger.log(mode);
+		console.log(client.id);
 	}
 }
