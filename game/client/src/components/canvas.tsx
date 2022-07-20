@@ -5,15 +5,6 @@ import { Table } from '@mui/material';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Stack from '@mui/material/Stack';
-import {
-	BrowserRouter as Router,
-	Routes,
-	Route,
-	Link
-} from 'react-router-dom';
-import { ButtonGroup } from '@mui/material';
-import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
 
 const ws = io("http://localhost:3001");
 // const ws = io("http://10.2.6.5:3001");
@@ -159,8 +150,6 @@ export default Canvas;
 
 // {(player_status === "Watching") &&
 // 	<Button variant="contained" onClick={handleMatchmakingClick}>Add me to queue</Button> }
-
-
 
 // return (
 // 	<Router>

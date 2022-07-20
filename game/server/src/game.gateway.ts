@@ -12,6 +12,7 @@ import { GameService } from './game.service';
 import { GameDetails } from './types';
 
 let details: GameDetails = new GameDetails;
+let mode: string = "";
 
 const sleep = (milliseconds: number) => {
 	return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -270,4 +271,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	// 	const obj = message;
 	// 	this.game.ball_speed = obj.ball_speed;
 	// }
+
+	@SubscribeMessage('mode_choice')
+	handleMode(client: Socket, message: any) : void {
+		const obj = message;
+		mode = obj.mode;
+		console.log(mode);
+	}
 }
